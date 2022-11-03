@@ -1,0 +1,4 @@
+﻿  WindowsProject1.cpp
+C:\Users\dladu\Desktop\WindowsProject1\WindowsProject1\WindowsProject1.cpp(140,22): warning C4244: '+=': 'FLOAT'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\dladu\Desktop\WindowsProject1\WindowsProject1\WindowsProject1.cpp(141,22): warning C4244: '+=': 'FLOAT'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  WindowsProject1.vcxproj -> C:\Users\dladu\Desktop\WindowsProject1\x64\Debug\WindowsProject1.exe
