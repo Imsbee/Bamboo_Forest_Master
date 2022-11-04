@@ -7,16 +7,20 @@
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
+int user_hp = 500;	// 유저의 hp
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 BOOL KeyBuffer[256];		// 키의 눌림 상태를 확인해주는 변수
 POINT user_pos = { 600, 400 };		// 유저의 위치 변수
-POINT monster_pos = { 1300, 0, };	// 몬스터의 위치 변수
+POINT monster_pos = { 1300, 10 };	// 몬스터의 위치 변수
+POINT monster_attack_pos;
+RECT monster_attack_rect;
 RECT user;		// 유저의 RECT 
-
+RECT user_hp_rect;	// 유저 hp의 RECT
 HBITMAP memBitmap;  // 메모리 DC에서 사용할 Bitmap 값
 HDC memdc;      // 메모리 DC 값
+
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -146,8 +150,33 @@ DWORD WINAPI monsterMove(LPVOID lpvoid)
 {
 	RECT monster = { monster_pos.x, monster_pos.y, monster_pos.x + 50, monster_pos.y + 50 };
 	
+	if (monster_pos.y == 10)
+	{
+		while (monster_pos.y != 630)
+		{
+			monster_pos.y += 10;
+			Sleep(30);
+		}
+	}
+	else if (monster_pos.y == 630)
+	{
+		while (monster_pos.y != 10)
+		{
+			monster_pos.y -= 10;
+			Sleep(30);
+		}
+		
+	}
 	
-	
+	return 0;
+}
+
+// 몬스터의 공격을 연산해주는 쓰레드
+DWORD WINAPI monster_attack(LPVOID lpvoid)
+{
+	monster_attack_pos = { monster_pos.x, monster_pos.y };
+	monster_attack_rect = { monster_attack_pos.x, monster_attack_pos.y, monster_attack_pos.x + 30, monster_attack_pos.y + 30 };
+
 	return 0;
 }
 
@@ -199,6 +228,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		ReleaseDC(hWnd, hdc);
 		SetTimer(hWnd, 0, 10, NULL);	// 유저의 움직임을 연산해주는 함수를 호출하기 위한 타이머
 		SetTimer(hWnd, 1, 500, NULL);
+		
+		user_hp_rect = { 10, 10,  user_hp, 30 };
 	}
 	break;
 	case WM_TIMER:
@@ -215,6 +246,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case 1:
 		{
 			CreateThread(NULL, NULL, monsterMove, NULL, NULL, NULL);
+			
 		}
 		break;
 		}
@@ -232,9 +264,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 	{
 		PAINTSTRUCT ps;
+		HBRUSH brush = CreateSolidBrush(RGB(255, 0, 0));
 		HDC hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 그리기 코드를 추가합니다.
-		Rectangle(hdc, user.left, user.top, user.right, user.bottom);
+		Rectangle(hdc, user.left, user.top, user.right, user.bottom);	// 유저
+		Rectangle(hdc, monster_pos.x, monster_pos.y, monster_pos.x + 50, monster_pos.y + 50);	// 몬스터
+		Rectangle(hdc, 10, 10, user_hp, 30);	// 유저의 체력
+		FillRect(hdc, &user_hp_rect, brush);
+		Rectangle(hdc, monster_attack_rect.left, monster_attack_rect.top, monster_attack_rect.right, monster_attack_rect.bottom);
+
 		EndPaint(hWnd, &ps);
 	}
 	break;
