@@ -14,8 +14,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름�
 BOOL KeyBuffer[256];		// 키의 눌림 상태를 확인해주는 변수
 POINT user_pos = { 600, 400 };		// 유저의 위치 변수
 POINT monster_pos = { 1300, 10 };	// 몬스터의 위치 변수
-POINT monster_attack_pos;
-RECT monster_attack_rect;
+
 RECT user;		// 유저의 RECT 
 RECT user_hp_rect;	// 유저 hp의 RECT
 HBITMAP memBitmap;  // 메모리 DC에서 사용할 Bitmap 값
@@ -142,7 +141,7 @@ void loop()
 		offset.y = 10.f;
 
 	user_pos.x += offset.x;
-	user_pos.y += offset.y;
+	user_pos.y += offset.y;	
 }
 
 // 몬스터의 움직임을 연산해주는 쓰레드
@@ -174,8 +173,34 @@ DWORD WINAPI monsterMove(LPVOID lpvoid)
 // 몬스터의 공격을 연산해주는 쓰레드
 DWORD WINAPI monster_attack(LPVOID lpvoid)
 {
-	monster_attack_pos = { monster_pos.x, monster_pos.y };
-	monster_attack_rect = { monster_attack_pos.x, monster_attack_pos.y, monster_attack_pos.x + 30, monster_attack_pos.y + 30 };
+	RECT rect;
+	RECT rect3;
+	RECT monster_attack_rect;
+	POINT monster_attack_pos;
+	HWND hWnd = (HWND)lpvoid;
+	monster_attack_pos = { monster_pos.x - 50, monster_pos.y + 20 };
+	
+	GetClientRect(hWnd, &rect3);
+	HDC hdc = GetDC(hWnd);
+	HBITMAP oldBitmap = (HBITMAP)SelectObject(memdc, memBitmap);
+
+	while (TRUE)
+	{
+		monster_attack_rect = { monster_attack_pos.x, monster_attack_pos.y, monster_attack_pos.x + 30, monster_attack_pos.y + 30 };
+		if (monster_attack_pos.x == 0 || IntersectRect(&rect, &monster_attack_rect, &user))
+		{
+			user_hp -= 20;
+			ExitThread(0);
+		}
+		else
+		{
+			monster_attack_pos.x -= 30;
+		}
+		Rectangle(hdc, monster_attack_rect.left, monster_attack_rect.top, monster_attack_rect.right, monster_attack_rect.bottom);
+		Sleep(30);
+	}
+	
+	ReleaseDC(hWnd, hdc);
 
 	return 0;
 }
@@ -227,7 +252,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		ReleaseDC(hWnd, hdc);
 		SetTimer(hWnd, 0, 10, NULL);	// 유저의 움직임을 연산해주는 함수를 호출하기 위한 타이머
-		SetTimer(hWnd, 1, 500, NULL);
+		SetTimer(hWnd, 1, 230, NULL);
 		
 		user_hp_rect = { 10, 10,  user_hp, 30 };
 	}
@@ -238,15 +263,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 		case 0:
 		{
+			RECT rect2;
+			HBRUSH brush = CreateSolidBrush(RGB(255, 0, 0));
 			loop(); // 유저의 움직임을 연산해주는 함수
 			user = { user_pos.x, user_pos.y, user_pos.x + 30, user_pos.y + 30 };
-			InvalidateRect(hWnd, NULL, TRUE);
+			GetClientRect(hWnd, &rect2);
+			HDC hdc = GetDC(hWnd);
+			HBITMAP oldBitmap = (HBITMAP)SelectObject(memdc, memBitmap);
+			BitBlt(hdc, 0, 0, rect2.right, rect2.bottom, memdc, 0, 0, SRCCOPY);
+			Rectangle(hdc, user.left, user.top, user.right, user.bottom);	// 유저
+			Rectangle(hdc, 10, 10, user_hp, 30);	// 유저의 체력
+			FillRect(hdc, &user_hp_rect, brush);	// 유저 rect를 빨간색으로 채우기
+			Rectangle(hdc, monster_pos.x, monster_pos.y, monster_pos.x + 50, monster_pos.y + 50);	// 몬스터
+			user_hp_rect = { 10, 10, user_hp, 30 };	// 유저의 체력을 계속해서 갱신
+			ReleaseDC(hWnd, hdc);
 		}
 		break;
 		case 1:
 		{
 			CreateThread(NULL, NULL, monsterMove, NULL, NULL, NULL);
-			
+			CreateThread(NULL, NULL, monster_attack, hWnd, NULL, NULL);
 		}
 		break;
 		}
@@ -264,14 +300,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 	{
 		PAINTSTRUCT ps;
-		HBRUSH brush = CreateSolidBrush(RGB(255, 0, 0));
+		RECT rect;
+		
 		HDC hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 그리기 코드를 추가합니다.
-		Rectangle(hdc, user.left, user.top, user.right, user.bottom);	// 유저
-		Rectangle(hdc, monster_pos.x, monster_pos.y, monster_pos.x + 50, monster_pos.y + 50);	// 몬스터
-		Rectangle(hdc, 10, 10, user_hp, 30);	// 유저의 체력
-		FillRect(hdc, &user_hp_rect, brush);
-		Rectangle(hdc, monster_attack_rect.left, monster_attack_rect.top, monster_attack_rect.right, monster_attack_rect.bottom);
+		GetClientRect(hWnd, &rect);
+		HBITMAP oldBitmap = (HBITMAP)SelectObject(memdc, memBitmap);        // 비트 패턴을 저장하기 위한 변수
+		BitBlt(hdc, 0, 0, rect.right, rect.bottom, memdc, 0, 0, SRCCOPY);	// memdc에 그려진 내용을 hdc에 고속 복사
 
 		EndPaint(hWnd, &ps);
 	}
