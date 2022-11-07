@@ -11,7 +11,7 @@ int user_hp = 500;	// 유저의 hp
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
-BOOL KeyBuffer[256];		// 키의 눌림 상태를 확인해주는 변수
+BOOL KeyBuffer[256];				// 키의 눌림 상태를 확인해주는 변수
 POINT user_pos = { 600, 400 };		// 유저의 위치 변수
 POINT monster_pos = { 1300, 10 };	// 몬스터의 위치 변수
 
@@ -19,7 +19,6 @@ RECT user;		// 유저의 RECT
 RECT user_hp_rect;	// 유저 hp의 RECT
 HBITMAP memBitmap;  // 메모리 DC에서 사용할 Bitmap 값
 HDC memdc;      // 메모리 DC 값
-
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -301,13 +300,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		PAINTSTRUCT ps;
 		RECT rect;
-		
 		HDC hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 그리기 코드를 추가합니다.
 		GetClientRect(hWnd, &rect);
 		HBITMAP oldBitmap = (HBITMAP)SelectObject(memdc, memBitmap);        // 비트 패턴을 저장하기 위한 변수
 		BitBlt(hdc, 0, 0, rect.right, rect.bottom, memdc, 0, 0, SRCCOPY);	// memdc에 그려진 내용을 hdc에 고속 복사
-
 		EndPaint(hWnd, &ps);
 	}
 	break;
