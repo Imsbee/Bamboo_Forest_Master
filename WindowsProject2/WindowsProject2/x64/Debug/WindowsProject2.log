@@ -1,3 +1,4 @@
 ﻿  WindowsProject2.cpp
-C:\Users\YUHAN\Desktop\두루미\Move_Rect\WindowsProject2\WindowsProject2\WindowsProject2.cpp(145,20): warning C4244: '+=': 'FLOAT'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  WindowsProject2.vcxproj -> C:\Users\YUHAN\Desktop\두루미\Move_Rect\WindowsProject2\x64\Debug\WindowsProject2.exe
+C:\Users\YUHAN\Desktop\꿩\Move_Rect\WindowsProject2\WindowsProject2\WindowsProject2.cpp(152,18): warning C4244: '+=': 'FLOAT'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\꿩\Move_Rect\WindowsProject2\WindowsProject2\WindowsProject2.cpp(183,6): warning C4101: 'x' :참조되지 않은 지역 변수입니다.
+  WindowsProject2.vcxproj -> C:\Users\YUHAN\Desktop\꿩\Move_Rect\WindowsProject2\x64\Debug\WindowsProject2.exe

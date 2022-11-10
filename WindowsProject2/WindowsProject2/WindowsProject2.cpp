@@ -14,6 +14,7 @@ BOOL KeyBuffer[256];
 HBITMAP memBitmap;  // 메모리 DC에서 사용할 Bitmap 값
 HDC memdc;      // 메모리 DC 값
 User user;
+RECT rect_user;
 
 // 윈도우 크기
 const int windows_size_width = 1280;
@@ -59,7 +60,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			DispatchMessage(&msg);
 		}
 	}
-
+	
 	return (int)msg.wParam;
 }
 
@@ -131,9 +132,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	return TRUE;
 }
 
-void loop()
+
+
+void loop(HWND hWnd)
 {
 	D2D1_POINT_2F offset;
+	RECT rect;
 
 	if (KeyBuffer[VK_LEFT] == KeyBuffer[VK_RIGHT])
 		offset.x = 0.f;
@@ -142,28 +146,59 @@ void loop()
 	else
 		offset.x = 10.f;
 
+	GetClientRect(hWnd, &rect);
+	FillRect(memdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
+
 	user.x += offset.x;
+}
+
+int intRand() 
+{
+
+	thread_local std::mt19937 generator(std::random_device{}());
+
+	std::uniform_int_distribution<int> distribution(1, windows_size_width - 50);
+
+	return distribution(generator);
+
+}
+
+int speedRand()
+{
+
+	thread_local std::mt19937 generator(std::random_device{}());
+
+	std::uniform_int_distribution<int> distribution(1, 50);
+
+	return distribution(generator);
+
 }
 
 DWORD WINAPI create_enemy(LPVOID lpvoid)
 {
 	Enemy enemy;
 	HWND hWnd;
+	RECT rect;
 	RECT rect_enemy;
+	int x;
 
 	hWnd = (HWND)lpvoid;
-
-	enemy.x = rand() % windows_size_width;
+	enemy.x = intRand();
 	enemy.y = 0;
-	enemy.speed = rand() % 30 + 1;
+	enemy.speed = speedRand();
 
 	while (TRUE)
 	{
 		rect_enemy = { enemy.x, enemy.y, enemy.x + 30, enemy.y + 30 };
-		Rectangle(memdc, rect_enemy.left, rect_enemy.top, rect_enemy.right, rect_enemy.bottom);
+		Rectangle(memdc, enemy.x, enemy.y, enemy.x + 30, enemy.y + 30);
 		enemy.y += enemy.speed;
-		Sleep(50);
+		Sleep(100);
 		if (enemy.y > windows_size_height - 100)
+		{
+			ExitThread(0);
+			return 0;
+		}
+		else if (IntersectRect(&rect, &rect_user, &rect_enemy))
 		{
 			ExitThread(0);
 			return 0;
@@ -186,8 +221,7 @@ DWORD WINAPI create_enemy(LPVOID lpvoid)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	RECT ground = { 0, windows_size_height - 100, windows_size_width, windows_size_height };
-
+	
 	switch (message)
 	{
 	case WM_COMMAND:
@@ -218,13 +252,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		memBitmap = CreateCompatibleBitmap(memdc, rect.right, rect.bottom);     // 사용자의 화면과 같은 크기의 비트맵 생성
 		SelectObject(memdc, memBitmap);
 		FillRect(memdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));    // 화면 전체를 흰색으로 칠하기(배경색 지정)
-		FillRect(memdc, &ground, (HBRUSH)GetStockObject(BLACK_BRUSH));
+		
 		BitBlt(hdc, 0, 0, rect.right, rect.bottom, memdc, 0, 0, SRCCOPY);   // memdc에 그린 내용을 hdc에 고속 복사
-		CreateThread(NULL, NULL, create_enemy, hWnd, NULL, NULL);
-
+		
 		ReleaseDC(hWnd, hdc);
 		SetTimer(hWnd, 0, 10, NULL);	// 플레이어의 움직임을 연산해 주는 함수를 호출 하기 위한 타이머
-		SetTimer(hWnd, 1, 500, NULL);	// 적의 움직임을 연산해 주는 함수를 호출 하기 위한 타이머
+		SetTimer(hWnd, 1, 100, NULL);	// 적의 움직임을 연산해 주는 함수를 호출 하기 위한 타이머
 	}
 	break;
 	case WM_TIMER:
@@ -233,14 +266,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 		case 0:
 		{
-			loop();
-			
+			loop(hWnd);
+			rect_user = { user.x, windows_size_height - 150, user.x + 50, windows_size_height - 100 };	// 플레이어의 rect 
 			Rectangle(memdc, user.x, windows_size_height - 150, user.x + 50, windows_size_height - 100);
+			CreateThread(NULL, NULL, create_enemy, hWnd, NULL, NULL);
 			InvalidateRect(hWnd, NULL, FALSE);
 		}
 		break;
 		case 1:
 		{
+			
 		}
 		break;
 		}
