@@ -14,7 +14,6 @@
 #include <memory.h>
 #include <tchar.h>
 #include <time.h>
-#include <stdlib.h>
 #include <random>
 #include <D2DBaseTypes.h>
 

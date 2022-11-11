@@ -13,8 +13,9 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름�
 BOOL KeyBuffer[256];
 HBITMAP memBitmap;  // 메모리 DC에서 사용할 Bitmap 값
 HDC memdc;      // 메모리 DC 값
-User user;
-RECT rect_user;
+User user;		// 유저 구조체
+RECT rect_user;	// 유저 rect
+int user_hp = 500;	// 유저의 체력
 
 // 윈도우 크기
 const int windows_size_width = 1280;
@@ -60,7 +61,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			DispatchMessage(&msg);
 		}
 	}
-	
+
 	return (int)msg.wParam;
 }
 
@@ -108,16 +109,16 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	HWND hWnd = CreateWindowW
 	(
-		szWindowClass, 
-		szTitle, 
+		szWindowClass,
+		szTitle,
 		WS_OVERLAPPED | WS_SYSMENU,
-		0, 
-		0, 
-		windows_size_width, 
-		windows_size_height, 
-		nullptr, 
-		nullptr, 
-		hInstance, 
+		0,
+		0,
+		windows_size_width,
+		windows_size_height,
+		nullptr,
+		nullptr,
+		hInstance,
 		nullptr
 	);
 
@@ -132,12 +133,17 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	return TRUE;
 }
 
+void clear(HWND hWnd)
+{
+	RECT rect;
 
+	GetClientRect(hWnd, &rect);
+	FillRect(memdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
+}
 
 void loop(HWND hWnd)
 {
 	D2D1_POINT_2F offset;
-	RECT rect;
 
 	if (KeyBuffer[VK_LEFT] == KeyBuffer[VK_RIGHT])
 		offset.x = 0.f;
@@ -146,13 +152,10 @@ void loop(HWND hWnd)
 	else
 		offset.x = 10.f;
 
-	GetClientRect(hWnd, &rect);
-	FillRect(memdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
-
 	user.x += offset.x;
 }
 
-int intRand() 
+int intRand()
 {
 
 	thread_local std::mt19937 generator(std::random_device{}());
@@ -168,7 +171,7 @@ int speedRand()
 
 	thread_local std::mt19937 generator(std::random_device{}());
 
-	std::uniform_int_distribution<int> distribution(1, 50);
+	std::uniform_int_distribution<int> distribution(1, 10);
 
 	return distribution(generator);
 
@@ -195,16 +198,17 @@ DWORD WINAPI create_enemy(LPVOID lpvoid)
 		Sleep(100);
 		if (enemy.y > windows_size_height - 100)
 		{
+			user_hp -= 50;
 			ExitThread(0);
 			return 0;
 		}
 		else if (IntersectRect(&rect, &rect_user, &rect_enemy))
 		{
+			user_hp -= 50;
 			ExitThread(0);
 			return 0;
 		}
 	}
-
 	return 0;
 }
 
@@ -221,7 +225,7 @@ DWORD WINAPI create_enemy(LPVOID lpvoid)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	
+
 	switch (message)
 	{
 	case WM_COMMAND:
@@ -252,12 +256,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		memBitmap = CreateCompatibleBitmap(memdc, rect.right, rect.bottom);     // 사용자의 화면과 같은 크기의 비트맵 생성
 		SelectObject(memdc, memBitmap);
 		FillRect(memdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));    // 화면 전체를 흰색으로 칠하기(배경색 지정)
-		
+
 		BitBlt(hdc, 0, 0, rect.right, rect.bottom, memdc, 0, 0, SRCCOPY);   // memdc에 그린 내용을 hdc에 고속 복사
-		
+
 		ReleaseDC(hWnd, hdc);
 		SetTimer(hWnd, 0, 10, NULL);	// 플레이어의 움직임을 연산해 주는 함수를 호출 하기 위한 타이머
-		SetTimer(hWnd, 1, 100, NULL);	// 적의 움직임을 연산해 주는 함수를 호출 하기 위한 타이머
+		SetTimer(hWnd, 1, 1000, NULL);		// 적의 움직임을 연산해 주는 함수를 호출 하기 위한 타이머
+		SetTimer(hWnd, 2, 10, NULL);	// 화면을 지우는 함수를 호출 하기 위한 타이머
 	}
 	break;
 	case WM_TIMER:
@@ -269,13 +274,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			loop(hWnd);
 			rect_user = { user.x, windows_size_height - 150, user.x + 50, windows_size_height - 100 };	// 플레이어의 rect 
 			Rectangle(memdc, user.x, windows_size_height - 150, user.x + 50, windows_size_height - 100);
-			CreateThread(NULL, NULL, create_enemy, hWnd, NULL, NULL);
 			InvalidateRect(hWnd, NULL, FALSE);
 		}
 		break;
 		case 1:
 		{
-			
+			CreateThread(NULL, NULL, create_enemy, hWnd, NULL, NULL);
+		}
+		break;
+		case 2:
+		{
+			clear(hWnd);
 		}
 		break;
 		}
@@ -297,9 +306,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		RECT rect;
 		HDC hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
+
 		GetClientRect(hWnd, &rect);
 		HBITMAP oldBitmap = (HBITMAP)SelectObject(memdc, memBitmap);        // 비트 패턴을 저장하기 위한 변수
 		BitBlt(hdc, 0, 0, rect.right, rect.bottom, memdc, 0, 0, SRCCOPY);	// memdc에 그려진 내용을 hdc에 고속 복사
+
 		EndPaint(hWnd, &ps);
 	}
 	break;
