@@ -15,6 +15,7 @@
 #include <tchar.h>
 #include <time.h>
 #include <random>
+#include <vector>
 #include <D2DBaseTypes.h>
 
 
@@ -29,3 +30,4 @@ typedef struct enemy
 	int y;
 	int speed;
 }Enemy;
+

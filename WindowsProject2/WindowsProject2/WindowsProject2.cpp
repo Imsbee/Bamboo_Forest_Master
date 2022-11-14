@@ -17,6 +17,19 @@ User user;		// 유저 구조체
 RECT rect_user;	// 유저 rect
 int user_hp = 500;	// 유저의 체력
 
+RECT rtBox1;	// 똥 RECT
+int nDelay = 30;	// 똥의 생성 시간 간격
+
+std::vector<RECT> vecRect;	// 똥을 그리기 위한 vector
+
+typedef struct tagBox
+{
+	RECT rt;
+	float speed;
+};
+
+std::vector<tagBox> vecBox;
+
 // 윈도우 크기
 const int windows_size_width = 1280;
 const int windows_size_height = 720;
@@ -155,6 +168,13 @@ void loop(HWND hWnd)
 	user.x += offset.x;
 }
 
+void RECT_MAKE(int x, int y, int nDelay)
+{
+	RECT rt;
+
+}
+
+/*
 int intRand()
 {
 
@@ -211,7 +231,7 @@ DWORD WINAPI create_enemy(LPVOID lpvoid)
 	}
 	return 0;
 }
-
+*/
 
 //
 //  함수: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -247,6 +267,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_CREATE:
 	{
+		RECT rt = 15, 10, 2, 5;
+		srand(time(NULL));
 		HDC hdc;
 		RECT rect;
 		hdc = GetDC(hWnd);
@@ -261,8 +283,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		ReleaseDC(hWnd, hdc);
 		SetTimer(hWnd, 0, 10, NULL);	// 플레이어의 움직임을 연산해 주는 함수를 호출 하기 위한 타이머
-		SetTimer(hWnd, 1, 1000, NULL);		// 적의 움직임을 연산해 주는 함수를 호출 하기 위한 타이머
-		SetTimer(hWnd, 2, 10, NULL);	// 화면을 지우는 함수를 호출 하기 위한 타이머
+		SetTimer(hWnd, 1, 10, NULL);	// 똥을 그리기 위한 타이머
 	}
 	break;
 	case WM_TIMER:
@@ -272,19 +293,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case 0:
 		{
 			loop(hWnd);
+			clear(hWnd);
 			rect_user = { user.x, windows_size_height - 150, user.x + 50, windows_size_height - 100 };	// 플레이어의 rect 
 			Rectangle(memdc, user.x, windows_size_height - 150, user.x + 50, windows_size_height - 100);
-			InvalidateRect(hWnd, NULL, FALSE);
 		}
 		break;
 		case 1:
 		{
-			CreateThread(NULL, NULL, create_enemy, hWnd, NULL, NULL);
-		}
-		break;
-		case 2:
-		{
-			//clear(hWnd);
+			InvalidateRect(hWnd, NULL, TRUE);
+
+			if (nDelay == 30)
+			{
+				RECT rt;
+				rt.left = rand() % (windows_size_width - 15);
+				rt.right = rt.left + 30;
+				rt.top = -30;
+				rt.bottom = 0;
+
+				vecRect.push_back(rt);
+				nDelay = rand() % 30;
+			}
+			else
+			{
+				nDelay++;
+			}
+
+			std::vector<RECT>::iterator iter;
+
+			for (iter = vecRect.begin(); iter != vecRect.end(); iter++)
+			{
+				iter->top += 10;
+				iter->bottom += 10;
+
+				if (iter->top > windows_size_height)
+				{
+					vecRect.erase(iter);
+					break;
+				}
+			}
 		}
 		break;
 		}
@@ -310,6 +356,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		GetClientRect(hWnd, &rect);
 		HBITMAP oldBitmap = (HBITMAP)SelectObject(memdc, memBitmap);        // 비트 패턴을 저장하기 위한 변수
 		BitBlt(hdc, 0, 0, rect.right, rect.bottom, memdc, 0, 0, SRCCOPY);	// memdc에 그려진 내용을 hdc에 고속 복사
+		for (int i = 0; i < vecRect.size(); i++)
+		{
+			Rectangle(hdc, vecRect[i].left, vecRect[i].top, vecRect[i].right, vecRect[i].bottom);
+		}
 		EndPaint(hWnd, &ps);
 	}
 	break;
