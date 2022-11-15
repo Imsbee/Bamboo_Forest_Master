@@ -3,6 +3,7 @@
 
 #include "framework.h"
 #include "Suberunker.h"
+#include "MainGame.h"
 
 #define MAX_LOADSTRING 100
 
@@ -10,22 +11,9 @@
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
-POINT ptMouse;  // 마우스의 위치를 저장할 변수
-POINT ptPos1;	// 플레이어의 위치
-RECT rtBox1;	// 플레이어의 RECT
-BOOL KeyBuffer[256];
 
-struct tagBox
-{
-	RECT rt;
-	float speed;
-};
-
-std::vector<tagBox> vecBox;
-int nDelay = 50;
-int nLevel;	// 난이도 조절을 위한 변수
-int nScore = 1;	// 유저의 점수
-
+MainGame* pMainGame;
+pMainGame = new MainGame;
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -140,21 +128,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 }
 
 
-void loop()
-{
-	D2D1_POINT_2F offset;
-
-	if (KeyBuffer[VK_LEFT] == KeyBuffer[VK_RIGHT])
-		offset.x = 0.f;
-	else if (KeyBuffer[VK_LEFT])
-		offset.x = -10.f;
-	else
-		offset.x = 10.f;
-
-	ptPos1.x += offset.x;
-}
-
-
 //
 //  함수: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -189,21 +162,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	
 	case WM_CREATE:
 	{
-		ptPos1.y = 600;
-
-		SetTimer(hWnd, 1, 10, NULL);
+		SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 그리고, 점수를 세기 위한 타이머
+		SetTimer(hWnd, 2, 1000, NULL);	// 시간을 측정하기 위한 타이머
 	}
 	break;
 	case WM_LBUTTONDOWN:
 	{
-		ptMouse.x = LOWORD(lParam);
-		ptMouse.y = HIWORD(lParam);
+		
 	}
 	break;
 	case WM_KEYDOWN:
 	{
 		KeyBuffer[wParam] = TRUE;
-
 	}
 	break;
 	case WM_KEYUP:
@@ -214,60 +184,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	
 	case WM_TIMER:
 	{
-		
-		loop(); 
-
-		InvalidateRect(hWnd, NULL, TRUE);
-
-		nLevel = nScore / 100 + 1;
-
-		rtBox1 = RECT_MAKE(ptPos1.x, ptPos1.y, 50);
-
-		if (nDelay >= 30)
+		switch(wParam)
 		{
-			tagBox box;
-			box.rt.left = rand() % (windows_size_width - 15);
-			box.rt.right = box.rt.left + 30;
-			box.rt.top = -30;
-			box.rt.bottom = 0;
-
-			box.speed = rand() % 12 + 5;
-
-			vecBox.push_back(box);
-			nDelay = rand() % 30;
-		}
-		else
-			nDelay += nLevel;
-
-		std::vector<tagBox>::iterator iter;
-
-		for (iter = vecBox.begin(); iter != vecBox.end(); iter++)
+		case 1:
 		{
-			iter->rt.top += iter->speed;
-			iter->rt.bottom += iter->speed;
-
-			RECT rt;
-			RECT rtIter = iter->rt;
-			if (iter->rt.top > windows_size_height)
-			{
-				nScore++;
-				vecBox.erase(iter);
-				break;
-			}
-			else if (IntersectRect(&rt, &rtBox1, &rtIter))
-			{
-				nScore -= 10;
-				vecBox.erase(iter);
-				break;
-			}
-			else if (PtInRect(&rtIter, ptMouse))
-			{
-				nScore += 5;
-				vecBox.erase(iter);
-				break;
-			}
+			
 		}
-		
+		break;
+		case 2:
+		{
+			time++;
+		}
+		break;
+		}
 	}
 	break;
 	case WM_PAINT:
@@ -275,23 +204,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
-		Rectangle(hdc, rtBox1.left, rtBox1.top, rtBox1.right, rtBox1.bottom);	// 플레이어 그리기
-
-		for (int i = 0; i < vecBox.size(); i++)
-		{
-			Rectangle(hdc, vecBox[i].rt.left, vecBox[i].rt.top, vecBox[i].rt.right, vecBox[i].rt.bottom);
-		}
-
-		char szBuf[32]; // 변환을 위한 변수
-
-		_itoa_s(nLevel, szBuf, 10);
-		std::string str = std::string(szBuf);
-		TextOutA(hdc, 10, 10, str.c_str(), str.length());
-
-		_itoa_s(nScore, szBuf, 10);
-		str = std::string(szBuf);
-		TextOutA(hdc, 10, 30, str.c_str(), str.length());
-
+		
 		EndPaint(hWnd, &ps);
 	}
 	break;

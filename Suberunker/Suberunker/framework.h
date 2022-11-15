@@ -18,8 +18,11 @@
 #include <D2DBaseTypes.h>
 
 // 윈도우 크기
-const int windows_size_width = 1280;
-const int windows_size_height = 720;
+const int windows_size_width = 760;
+const int windows_size_height = 850;
+
+BOOL KeyBuffer[256];	// 키가 눌렸는지 확인하기 위한 배열
+HWND g_hWnd;
 
 // RECT를 만들어주는 함수
 RECT RECT_MAKE(int x, int y, int size)
@@ -32,3 +35,4 @@ RECT RECT_MAKE(int x, int y, int size)
 
 	return rt;
 }
+
