@@ -3,7 +3,6 @@
 
 #include "framework.h"
 #include "Suberunker.h"
-#include "MainGame.h"
 
 #define MAX_LOADSTRING 100
 
@@ -12,24 +11,20 @@ HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 POINT ptMouse;  // 마우스의 위치를 저장할 변수
-//POINT ptPos1;	// 플레이어의 위치
-//RECT rtBox1;	// 플레이어의 RECT
+POINT ptPos1;	// 플레이어의 위치
+RECT rtBox1;	// 플레이어의 RECT
 BOOL KeyBuffer[256];
 
-//struct tagBox
-//{
-	//RECT rt;
-	//float speed;
-//};
+struct tagBox
+{
+	RECT rt;
+	float speed;
+};
 
-//std::vector<tagBox> vecBox;
-//int nDelay = 50;
-//int nLevel;	// 난이도 조절을 위한 변수
-//int nScore = 1;	// 유저의 점수
-
-POINTER_64 pMainGame;
-
-pMainGame = new MainGame;
+std::vector<tagBox> vecBox;
+int nDelay = 50;
+int nLevel;	// 난이도 조절을 위한 변수
+int nScore = 1;	// 유저의 점수
 
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
@@ -144,6 +139,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	return TRUE;
 }
 
+
 void loop()
 {
 	D2D1_POINT_2F offset;
@@ -157,6 +153,7 @@ void loop()
 
 	ptPos1.x += offset.x;
 }
+
 
 //
 //  함수: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -189,6 +186,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
+	
 	case WM_CREATE:
 	{
 		ptPos1.y = 600;
@@ -213,8 +211,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		KeyBuffer[wParam] = FALSE;
 	}
 	break;
+	
 	case WM_TIMER:
 	{
+		
 		loop(); 
 
 		InvalidateRect(hWnd, NULL, TRUE);
@@ -267,6 +267,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 		}
+		
 	}
 	break;
 	case WM_PAINT:
