@@ -11,9 +11,8 @@
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
+static MainGame* pMainGame = new MainGame;
 
-MainGame* pMainGame;
-pMainGame = new MainGame;
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -108,8 +107,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		WS_OVERLAPPED | WS_SYSMENU,
 		0,
 		0,
-		windows_size_width,
-		windows_size_height,
+		WINSIZEX,
+		WINSIZEY,
 		nullptr,
 		nullptr,
 		hInstance,
@@ -127,8 +126,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	return TRUE;
 }
 
-
-//
 //  함수: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
 //  용도: 주 창의 메시지를 처리합니다.
@@ -159,41 +156,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
-	
+
 	case WM_CREATE:
 	{
+		pMainGame = new MainGame;
+		pMainGame->Init();
 		SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 그리고, 점수를 세기 위한 타이머
 		SetTimer(hWnd, 2, 1000, NULL);	// 시간을 측정하기 위한 타이머
 	}
 	break;
 	case WM_LBUTTONDOWN:
 	{
-		
+
 	}
 	break;
 	case WM_KEYDOWN:
 	{
-		KeyBuffer[wParam] = TRUE;
+		//KeyBuffer[wParam] = TRUE;
 	}
 	break;
 	case WM_KEYUP:
 	{
-		KeyBuffer[wParam] = FALSE;
+		//KeyBuffer[wParam] = FALSE;
 	}
 	break;
-	
+
 	case WM_TIMER:
 	{
-		switch(wParam)
+		switch (wParam)
 		{
 		case 1:
 		{
-			
+			if (pMainGame)
+				pMainGame->Update();
 		}
 		break;
 		case 2:
 		{
-			time++;
+
 		}
 		break;
 		}
@@ -204,7 +204,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
-		
+		if (pMainGame)
+			pMainGame->Render();
+
+
 		EndPaint(hWnd, &ps);
 	}
 	break;

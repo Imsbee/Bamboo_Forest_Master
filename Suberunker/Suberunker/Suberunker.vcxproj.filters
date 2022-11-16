@@ -38,7 +38,7 @@
     <ClCompile Include="Suberunker.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="MainGame.cpp">
+    <ClCompile Include="MainNode.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
