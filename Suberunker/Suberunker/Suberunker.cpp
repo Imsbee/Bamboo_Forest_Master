@@ -1,9 +1,8 @@
 ﻿// Suberunker.cpp : 애플리케이션에 대한 진입점을 정의합니다.
 //
 
-#include "framework.h"
+#include "MainNode.cpp"
 #include "Suberunker.h"
-#include "MainGame.h"
 
 #define MAX_LOADSTRING 100
 
@@ -11,7 +10,7 @@
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
-static MainGame* pMainGame = new MainGame;
+static MainNode* pMainGame = new MainNode;
 
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
@@ -159,7 +158,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_CREATE:
 	{
-		pMainGame = new MainGame;
 		pMainGame->Init();
 		SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 그리고, 점수를 세기 위한 타이머
 		SetTimer(hWnd, 2, 1000, NULL);	// 시간을 측정하기 위한 타이머

@@ -48,3 +48,4 @@ void RECT_DRAW(RECT rect)
 	ReleaseDC(g_hWnd, hdc);
 }
 
+

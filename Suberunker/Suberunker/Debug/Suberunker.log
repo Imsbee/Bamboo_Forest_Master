@@ -1,13 +1,28 @@
 ﻿  MainNode.cpp
-C:\Users\YUHAN\Desktop\마도요\Move_Rect\Suberunker\Suberunker\MainNode.cpp(33,39): warning C4244: '-=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\YUHAN\Desktop\마도요\Move_Rect\Suberunker\Suberunker\MainNode.cpp(38,39): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\YUHAN\Desktop\마도요\Move_Rect\Suberunker\Suberunker\MainNode.cpp(58,33): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\YUHAN\Desktop\마도요\Move_Rect\Suberunker\Suberunker\MainNode.cpp(69,36): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\YUHAN\Desktop\마도요\Move_Rect\Suberunker\Suberunker\MainNode.cpp(70,39): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\YUHAN\Desktop\마도요\Move_Rect\Suberunker\Suberunker\MainNode.cpp(49,14): warning C4101: 'rt' :참조되지 않은 지역 변수입니다.
+C:\Users\YUHAN\Desktop\말똥가리\Move_Rect\Suberunker\Suberunker\MainNode.cpp(33,27): warning C4244: '-=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\말똥가리\Move_Rect\Suberunker\Suberunker\MainNode.cpp(38,27): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\말똥가리\Move_Rect\Suberunker\Suberunker\MainNode.cpp(58,33): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\말똥가리\Move_Rect\Suberunker\Suberunker\MainNode.cpp(69,29): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\말똥가리\Move_Rect\Suberunker\Suberunker\MainNode.cpp(70,32): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\말똥가리\Move_Rect\Suberunker\Suberunker\MainNode.cpp(49,14): warning C4101: 'rt' :참조되지 않은 지역 변수입니다.
+  Suberunker.cpp
+C:\Users\YUHAN\Desktop\말똥가리\Move_Rect\Suberunker\Suberunker\MainNode.cpp(33,27): warning C4244: '-=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\말똥가리\Move_Rect\Suberunker\Suberunker\MainNode.cpp(38,27): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\말똥가리\Move_Rect\Suberunker\Suberunker\MainNode.cpp(58,33): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\말똥가리\Move_Rect\Suberunker\Suberunker\MainNode.cpp(69,29): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\말똥가리\Move_Rect\Suberunker\Suberunker\MainNode.cpp(70,32): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\말똥가리\Move_Rect\Suberunker\Suberunker\MainNode.cpp(49,14): warning C4101: 'rt' :참조되지 않은 지역 변수입니다.
+  코드를 생성하고 있습니다...
+Suberunker.obj : error LNK2005: "public: __thiscall MainNode::MainNode(void)" (??0MainNode@@QAE@XZ)이(가) MainNode.obj에 이미 정의되어 있습니다.
+Suberunker.obj : error LNK2005: "public: __thiscall MainNode::~MainNode(void)" (??1MainNode@@QAE@XZ)이(가) MainNode.obj에 이미 정의되어 있습니다.
+Suberunker.obj : error LNK2005: "public: virtual void __thiscall MainNode::Init(void)" (?Init@MainNode@@UAEXXZ)이(가) MainNode.obj에 이미 정의되어 있습니다.
 Suberunker.obj : error LNK2005: "void __cdecl RECT_DRAW(struct tagRECT)" (?RECT_DRAW@@YAXUtagRECT@@@Z)이(가) MainNode.obj에 이미 정의되어 있습니다.
 Suberunker.obj : error LNK2005: "struct tagRECT __cdecl RECT_MAKE(int,int,int)" (?RECT_MAKE@@YA?AUtagRECT@@HHH@Z)이(가) MainNode.obj에 이미 정의되어 있습니다.
+Suberunker.obj : error LNK2005: "public: virtual void __thiscall MainNode::Render(void)" (?Render@MainNode@@UAEXXZ)이(가) MainNode.obj에 이미 정의되어 있습니다.
+Suberunker.obj : error LNK2005: "public: virtual void __thiscall MainNode::Update(void)" (?Update@MainNode@@UAEXXZ)이(가) MainNode.obj에 이미 정의되어 있습니다.
 Suberunker.obj : error LNK2005: "struct HWND__ * g_hWnd" (?g_hWnd@@3PAUHWND__@@A)이(가) MainNode.obj에 이미 정의되어 있습니다.
-MainNode.obj : error LNK2019: "public: __thiscall GameNode::GameNode(void)" (??0GameNode@@QAE@XZ)"public: __thiscall MainGame::MainGame(void)" (??0MainGame@@QAE@XZ) 함수에서 참조되는 확인할 수 없는 외부 기호
-MainNode.obj : error LNK2019: "public: __thiscall GameNode::~GameNode(void)" (??1GameNode@@QAE@XZ)"public: __thiscall MainGame::~MainGame(void)" (??1MainGame@@QAE@XZ) 함수에서 참조되는 확인할 수 없는 외부 기호
-C:\Users\YUHAN\Desktop\마도요\Move_Rect\Suberunker\Debug\Suberunker.exe : fatal error LNK1120: 2개의 확인할 수 없는 외부 참조입니다.
+MainNode.obj : error LNK2019: "public: __thiscall GameNode::GameNode(void)" (??0GameNode@@QAE@XZ)"public: __thiscall MainNode::MainNode(void)" (??0MainNode@@QAE@XZ) 함수에서 참조되는 확인할 수 없는 외부 기호
+Suberunker.obj : error LNK2001: 확인할 수 없는 외부 기호 "public: __thiscall GameNode::GameNode(void)" (??0GameNode@@QAE@XZ)
+MainNode.obj : error LNK2019: "public: __thiscall GameNode::~GameNode(void)" (??1GameNode@@QAE@XZ)"public: __thiscall MainNode::~MainNode(void)" (??1MainNode@@QAE@XZ) 함수에서 참조되는 확인할 수 없는 외부 기호
+Suberunker.obj : error LNK2001: 확인할 수 없는 외부 기호 "public: __thiscall GameNode::~GameNode(void)" (??1GameNode@@QAE@XZ)
+C:\Users\YUHAN\Desktop\말똥가리\Move_Rect\Suberunker\Debug\Suberunker.exe : fatal error LNK1120: 2개의 확인할 수 없는 외부 참조입니다.

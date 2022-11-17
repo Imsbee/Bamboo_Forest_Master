@@ -1,16 +1,16 @@
 #include "framework.h"
-#include "MainGame.h"
+#include "MainNode.h"
 
-MainGame::MainGame()
+MainNode::MainNode()
 {
 
 }
 
-MainGame::~MainGame()
+MainNode::~MainNode()
 {
 }
 
-void MainGame::Init()
+void MainNode::Init()
 {
     m_ptPos1 = { WINSIZEX / 2, WINSIZEY - 30 };   // 조작할 렉트의 좌표 값
     m_fMoveSpeed = 20;
@@ -23,7 +23,7 @@ void MainGame::Init()
 
 }
 
-void MainGame::Update()
+void MainNode::Update()
 {
     InvalidateRect(g_hWnd, NULL, true);   // 전체 영역을 다시 그린다. NULL이 들어가면 전체 화면.
 
@@ -87,10 +87,9 @@ void MainGame::Update()
 
 }
 
-void MainGame::Render()
+void MainNode::Render()
 {
     PAINTSTRUCT ps;
-    // HDC : Device Context Handle : 출력을 위한 모든 데이터를 가지는 구조체
     HDC hdc = BeginPaint(g_hWnd, &ps);
     // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
 
