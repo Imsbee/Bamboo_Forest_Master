@@ -1,8 +1,8 @@
 ﻿// Suberunker.cpp : 애플리케이션에 대한 진입점을 정의합니다.
 //
 
-#include "MainNode.cpp"
 #include "Suberunker.h"
+#include "framework.h"
 
 #define MAX_LOADSTRING 100
 
@@ -10,7 +10,6 @@
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
-static MainNode* pMainGame = new MainNode;
 
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
@@ -155,43 +154,123 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
-
 	case WM_CREATE:
 	{
-		pMainGame->Init();
+		ptPos1.y = WINSIZEY - 100;
+
 		SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 그리고, 점수를 세기 위한 타이머
 		SetTimer(hWnd, 2, 1000, NULL);	// 시간을 측정하기 위한 타이머
 	}
 	break;
+	case WM_MOUSEMOVE:
+	{
+		if (isStart)
+		{
+			ptMouse.x = GET_X_LPARAM(lParam);
+			ptMouse.y = GET_Y_LPARAM(lParam);
+		}
+	}
+	break;
 	case WM_LBUTTONDOWN:
 	{
-
+		if (!isStart)
+		{
+			ptMouse.x = GET_X_LPARAM(lParam);
+			ptMouse.y = GET_Y_LPARAM(lParam);
+		}
+	}
+	break;
+	case WM_LBUTTONUP:
+	{
+		if (PtInRect(&startBtn, ptMouse))
+		{
+			isStart = TRUE;
+		} 
+		else if (PtInRect(&endBtn, ptMouse))
+		{
+			exit(0);
+		}
 	}
 	break;
 	case WM_KEYDOWN:
 	{
-		//KeyBuffer[wParam] = TRUE;
+		KeyBuffer[wParam] = TRUE;
 	}
 	break;
 	case WM_KEYUP:
 	{
-		//KeyBuffer[wParam] = FALSE;
+		KeyBuffer[wParam] = FALSE;
 	}
 	break;
-
 	case WM_TIMER:
 	{
 		switch (wParam)
 		{
 		case 1:
 		{
-			if (pMainGame)
-				pMainGame->Update();
+			if (isStart)
+			{
+
+				loop();
+
+				InvalidateRect(hWnd, NULL, TRUE);
+
+				nLevel = nScore / 100 + 1;
+
+				rtBox1 = RECT_MAKE(ptPos1.x, ptPos1.y, 30);	// 플레이어 그리기
+
+				if (nDelay >= 30)
+				{
+					tagBox box;	// 똥
+					box.rt.left = rand() % (WINSIZEX - 50);
+					box.rt.right = box.rt.left + 30;
+					box.rt.top = -30;
+					box.rt.bottom = 0;
+
+					box.speed = rand() % 12 + 5;
+
+					vecBox.push_back(box);
+					nDelay = rand() % 30;
+				}
+				else
+					nDelay += nLevel;
+
+				vector<tagBox>::iterator iter;
+
+				for (iter = vecBox.begin(); iter != vecBox.end(); iter++)
+				{
+					iter->rt.top += iter->speed;
+					iter->rt.bottom += iter->speed;
+
+					RECT rt;
+					RECT rtIter = iter->rt;
+
+					if (iter->rt.top > WINSIZEY)
+					{
+						nScore++;
+						vecBox.erase(iter);
+						break;
+					}
+					else if (IntersectRect(&rt, &rtBox1, &rtIter))
+					{
+						hp--;
+						vecBox.erase(iter);
+						break;
+					}
+					else if (PtInRect(&rtIter, ptMouse))
+					{
+						nScore += 5;
+						vecBox.erase(iter);
+						break;
+					}
+				}
+			}
 		}
 		break;
 		case 2:
 		{
-
+			if(isStart)
+				time++;
 		}
 		break;
 		}
@@ -202,9 +281,53 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
-		if (pMainGame)
-			pMainGame->Render();
+		Rectangle(hdc, startBtn.left, startBtn.top, startBtn.right, startBtn.bottom);
+		Rectangle(hdc, endBtn.left, endBtn.top, endBtn.right, endBtn.bottom);
+		string str = "게임 시작";
+		TextOutA(hdc, WINSIZEX / 2 - 90, WINSIZEY / 2 - 85, str.c_str(), str.length());
+		str = "게임 종료";
+		TextOutA(hdc, WINSIZEX / 2 - 90, WINSIZEY / 2 + 15, str.c_str(), str.length());
+		
 
+		if (isStart)
+		{
+			str.erase(0, 5);
+			Rectangle(hdc, rtBox1.left, rtBox1.top, rtBox1.right, rtBox1.bottom);	// 플레이어 그리기
+
+			for (int i = 0; i < vecBox.size(); i++)
+			{
+				Rectangle(hdc, vecBox[i].rt.left, vecBox[i].rt.top, vecBox[i].rt.right, vecBox[i].rt.bottom);
+			}
+
+			char szBuf[32]; // 변환을 위한 변수
+
+			// 문자열로 변환하기
+			_itoa_s(nLevel, szBuf, 10);
+			string str = string(szBuf);
+			str = "Level: " + str;
+			TextOutA(hdc, 10, 10, str.c_str(), str.length());
+
+			_itoa_s(nScore, szBuf, 10);
+			str = string(szBuf);
+			str = "당신의 점수: " + str;
+			TextOutA(hdc, 10, 30, str.c_str(), str.length());
+
+			_itoa_s(time, szBuf, 10);
+			str = string(szBuf);
+			str = "피한 시간: " + str + "초";
+			TextOutA(hdc, 10, 50, str.c_str(), str.length());
+
+			_itoa_s(hp, szBuf, 10);
+			str = string(szBuf);
+			str = "당신의 체력: " + str;
+			TextOutA(hdc, 10, 70, str.c_str(), str.length());
+
+			if (hp == 0)
+			{
+				TextOutA(hdc, WINSIZEX / 2 - 50, WINSIZEY / 2 - 50, "GAME OVER", 9);
+				KillTimer(hWnd, 1);
+			}
+		}
 
 		EndPaint(hWnd, &ps);
 	}

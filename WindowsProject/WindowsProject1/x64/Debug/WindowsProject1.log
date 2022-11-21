@@ -1,5 +1,0 @@
-﻿  WindowsProject1.cpp
-C:\Users\YUHAN\source\repos\WindowsProject1\WindowsProject1\Position.h(22,18): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
-C:\Users\YUHAN\source\repos\WindowsProject1\WindowsProject1\Position.h(22,23): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
-C:\Users\YUHAN\source\repos\WindowsProject1\WindowsProject1\WindowsProject1.cpp(195,18): warning C4244: '+=': 'FLOAT'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  WindowsProject1.vcxproj -> C:\Users\YUHAN\source\repos\WindowsProject1\x64\Debug\WindowsProject1.exe

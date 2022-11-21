@@ -15,16 +15,20 @@
 #include <tchar.h>
 #include <vector>
 #include <string>
+#include <windowsx.h>
 #include <D2DBaseTypes.h>
 
 // 윈도우 크기
-#define WINSIZEX 640
-#define WINSIZEY 720
+#define WINSIZEX 1280
+#define WINSIZEY 760
 
-using namespace std;
-
-HWND g_hWnd;
-
+BOOL isStart;
+BOOL KeyBuffer[256];
+RECT rtBox1;	// 플레이어의 RECT
+RECT startBtn = { WINSIZEX / 2 - 150, WINSIZEY / 2 - 100, WINSIZEX / 2 + 50, WINSIZEY / 2 - 50 };
+RECT endBtn = { WINSIZEX / 2 - 150, WINSIZEY / 2, WINSIZEX / 2 + 50, WINSIZEY / 2 + 50 };
+POINT ptPos1;
+POINT ptMouse;  // 마우스의 위치를 저장할 변수
 
 // RECT를 만들어주는 함수
 RECT RECT_MAKE(int x, int y, int size)
@@ -38,14 +42,37 @@ RECT RECT_MAKE(int x, int y, int size)
 	return rt;
 }
 
-// RECT를 그려주는 함수
-void RECT_DRAW(RECT rect)
+using namespace std;
+
+struct tagBox
 {
-	HDC hdc = GetDC(g_hWnd);
+	RECT rt;
+	float speed;
+};
 
-	Rectangle(hdc, rect.left, rect.top, rect.right, rect.bottom);
+vector<tagBox> vecBox;	// 똥
+int nDelay = 50;	 // 똥의 시간 간격
+int nLevel;	// 난이도 
+int nScore = 1;	// 유저의 점수
+int time = 0;	// 시간
+int hp = 5; // 플레이어의 hp
 
-	ReleaseDC(g_hWnd, hdc);
+void loop()
+{
+	D2D1_POINT_2F offset = { 0, 0 };
+
+	if (KeyBuffer[VK_LEFT] == KeyBuffer[VK_RIGHT])
+		offset.x = 0.f;
+	else if (KeyBuffer[VK_LEFT])
+	{
+		if (ptPos1.x > 0)
+			offset.x = -10.f;
+	}
+	else
+	{
+		if (ptPos1.x < WINSIZEX - 50)
+			offset.x = 10.f;
+	}
+
+	ptPos1.x += offset.x;
 }
-
-
