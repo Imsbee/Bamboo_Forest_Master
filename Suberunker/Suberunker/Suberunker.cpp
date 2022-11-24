@@ -154,12 +154,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
-	case WM_CREATE:
+	case WM_RBUTTONDOWN:
 	{
-		ptPos1.y = WINSIZEY - 100;
+		HDC hdc = GetDC(hWnd);
 
-		SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 그리고, 점수를 세기 위한 타이머
-		SetTimer(hWnd, 2, 1000, NULL);	// 시간을 측정하기 위한 타이머
+		Rectangle(hdc, startBtn.left, startBtn.top, startBtn.right, startBtn.bottom);
+		Rectangle(hdc, endBtn.left, endBtn.top, endBtn.right, endBtn.bottom);
+		string str = "게임 시작";
+		TextOutA(hdc, WINSIZEX / 2 - 90, WINSIZEY / 2 - 85, str.c_str(), str.length());
+		str = "게임 종료";
+		TextOutA(hdc, WINSIZEX / 2 - 90, WINSIZEY / 2 + 15, str.c_str(), str.length());
+
+		ReleaseDC(hWnd, hdc);
 	}
 	break;
 	case WM_MOUSEMOVE:
@@ -185,10 +191,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (PtInRect(&startBtn, ptMouse))
 		{
 			isStart = TRUE;
+			ptPos1.y = WINSIZEY - 100;
+
+			SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 그리고, 점수를 세기 위한 타이머
+			SetTimer(hWnd, 2, 1000, NULL);	// 시간을 측정하기 위한 타이머
 		} 
-		else if (PtInRect(&endBtn, ptMouse))
+		if (PtInRect(&endBtn, ptMouse))
 		{
 			exit(0);
+		}
+		if (PtInRect(&retryBtn, ptMouse))
+		{
+			ptPos1.x = WINSIZEX / 2 + 50;
+			hp = 1;
+
+			SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 그리고, 점수를 세기 위한 타이머
+			SetTimer(hWnd, 2, 1000, NULL);	// 시간을 측정하기 위한 타이머
 		}
 	}
 	break;
@@ -224,8 +242,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					tagBox box;	// 똥
 					box.rt.left = rand() % (WINSIZEX - 50);
 					box.rt.right = box.rt.left + 30;
-					box.rt.top = -30;
-					box.rt.bottom = 0;
+					box.rt.top = rand() % (WINSIZEY - 50);
+					box.rt.bottom = box.rt.top + 30;
 
 					box.speed = rand() % 12 + 5;
 
@@ -281,17 +299,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
-		Rectangle(hdc, startBtn.left, startBtn.top, startBtn.right, startBtn.bottom);
-		Rectangle(hdc, endBtn.left, endBtn.top, endBtn.right, endBtn.bottom);
-		string str = "게임 시작";
-		TextOutA(hdc, WINSIZEX / 2 - 90, WINSIZEY / 2 - 85, str.c_str(), str.length());
-		str = "게임 종료";
-		TextOutA(hdc, WINSIZEX / 2 - 90, WINSIZEY / 2 + 15, str.c_str(), str.length());
-		
-
 		if (isStart)
 		{
-			str.erase(0, 5);
 			Rectangle(hdc, rtBox1.left, rtBox1.top, rtBox1.right, rtBox1.bottom);	// 플레이어 그리기
 
 			for (int i = 0; i < vecBox.size(); i++)
@@ -326,6 +335,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				TextOutA(hdc, WINSIZEX / 2 - 50, WINSIZEY / 2 - 50, "GAME OVER", 9);
 				KillTimer(hWnd, 1);
+				KillTimer(hWnd, 2);
+				TextOutA(hdc, retryBtn.left, retryBtn.top, "RETRY", 5);
+				startBtn = { 0, 0, 0, 0 };
+				endBtn = { 0, 0, 0, 0 };
 			}
 		}
 

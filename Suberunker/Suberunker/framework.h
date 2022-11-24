@@ -27,6 +27,7 @@ BOOL KeyBuffer[256];
 RECT rtBox1;	// 플레이어의 RECT
 RECT startBtn = { WINSIZEX / 2 - 150, WINSIZEY / 2 - 100, WINSIZEX / 2 + 50, WINSIZEY / 2 - 50 };
 RECT endBtn = { WINSIZEX / 2 - 150, WINSIZEY / 2, WINSIZEX / 2 + 50, WINSIZEY / 2 + 50 };
+RECT retryBtn = { WINSIZEX / 2 - 30, WINSIZEY / 2 , WINSIZEX / 2 + 10, WINSIZEY / 2 + 10 };
 POINT ptPos1;
 POINT ptMouse;  // 마우스의 위치를 저장할 변수
 
@@ -55,7 +56,7 @@ int nDelay = 50;	 // 똥의 시간 간격
 int nLevel;	// 난이도 
 int nScore = 1;	// 유저의 점수
 int time = 0;	// 시간
-int hp = 5; // 플레이어의 hp
+int hp = 1; // 플레이어의 hp
 
 void loop()
 {
@@ -74,5 +75,19 @@ void loop()
 			offset.x = 10.f;
 	}
 
+	if (KeyBuffer[VK_UP] == KeyBuffer[VK_DOWN])
+		offset.y = 0.f;
+	else if (KeyBuffer[VK_UP])
+	{
+		if (ptPos1.y > 0)
+			offset.y = -10.f;
+	}
+	else
+	{
+		if (ptPos1.y < WINSIZEY)
+			offset.y = 10.f;
+	}
+
 	ptPos1.x += offset.x;
+	ptPos1.y += offset.y;
 }
