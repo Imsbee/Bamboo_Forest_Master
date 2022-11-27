@@ -101,7 +101,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	HWND hWnd = CreateWindowW
 	(
 		szWindowClass,
-		L"똥 피하기",
+		L"죽림고수",
 		WS_OVERLAPPED | WS_SYSMENU,
 		0,
 		0,
@@ -152,6 +152,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
+	}
+	break;
+	case WM_CREATE:
+	{
+		RECT rt;
+		HDC hdc = GetDC(hWnd);
+		GetClientRect(hWnd, &rt);
+		memDC = CreateCompatibleDC(hdc);
+		memBitmap = CreateCompatibleBitmap(hdc, rt.right, rt.bottom);
+		oldBitmap = (HBITMAP)SelectObject(memDC, memBitmap);
+
+		FillRect(memDC, &rt, (HBRUSH)GetStockObject(WHITE_BRUSH));
+		BitBlt(hdc, 0, 0, rt.right, rt.bottom, memDC, 0, 0, SRCCOPY);
+
+		ReleaseDC(hWnd, hdc);
 	}
 	break;
 	case WM_MOUSEMOVE:
@@ -216,6 +231,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 				loop();
 
+				nScore = time * 100.f;
+
 				InvalidateRect(hWnd, NULL, TRUE);
 
 				//nLevel = nScore / 100 + 1;
@@ -227,7 +244,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					int i = rand() % 2;
 					int arr[2] = { 0, WINSIZEY - 50 };
 
-					tagBox box;	// 똥
+					tagBox box;	// 화살
 					box.rt.left = rand() % (WINSIZEX - 50);
 					box.rt.right = box.rt.left + 30;
 					box.rt.top = arr[i];
@@ -250,8 +267,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					arrow_x = ptPos1.x - iter->rt.left;
 					arrow_y = ptPos1.y - iter->rt.top;
 
-					dis = sqrtf(powf(arrow_x, 2) + powf(arrow_y, 2));
+					dis = sqrtf(powf(arrow_x, 2) + powf(arrow_y, 2));	// 화살이 생성된 위치와 플레이어 사이의 거리 구하기
 
+					// 벡터 정규화
 					if (dis != 0)
 					{
 						arrow_x = arrow_x / dis;
@@ -310,7 +328,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (isStart)
 			{
 				time++;
-				nScore = time * 100;
+				
 			}
 		}
 		break;

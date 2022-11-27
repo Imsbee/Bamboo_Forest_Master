@@ -34,7 +34,7 @@ RECT rtBox1;	// 플레이어의 RECT
 POINT ptPos1;	// 플레이어의 위치
 POINT ptMouse;  // 마우스의 위치를 저장할 변수
 
-// 똥 구조체
+// 화살 구조체
 struct tagBox
 {
 	RECT rt;
@@ -42,19 +42,23 @@ struct tagBox
 };
 
 
-double arrow_speed_x;
-double arrow_speed_y;
-double dis;
-double arrow_x;
-double arrow_y;
+double arrow_speed_x;	// 화살의 x좌표 속도
+double arrow_speed_y;	// 화살의 y좌표 속도
+double dis;							// 화살과 플레이어 사이의 거리
+double arrow_x;				// 화살의 x 좌표
+double arrow_y;				// 화살의 y 좌표
 
-vector<tagBox> vecBox;	// 똥
-int nDelay = 50;	 // 똥의 시간 간격
-int nLevel;	// 똥의 발생 시간 간격을 조절하기 위한 난이도 변수
-int nScore = 1;	// 유저의 점수
-int time = 0;	// 시간
+vector<tagBox> vecBox;	// 화살
+int nDelay = 50;	 // 화살의 시간 간격
+int nLevel;	// 화살의 발생 시간 간격을 조절하기 위한 난이도 변수
+double nScore = 1;	// 유저의 점수
+double time = 1.f;	// 시간
 int hp = 1; // 플레이어의 hp
 
+
+HDC memDC;
+HBITMAP memBitmap;
+HBITMAP oldBitmap;
 
 
 // RECT를 만들어주는 함수
