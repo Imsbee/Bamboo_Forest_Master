@@ -101,7 +101,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	HWND hWnd = CreateWindowW
 	(
 		szWindowClass,
-		szTitle,
+		L"죽림고수",
 		WS_OVERLAPPED | WS_SYSMENU,
 		0,
 		0,
@@ -154,16 +154,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
-	case WM_RBUTTONDOWN:
+	case WM_CREATE:
 	{
+		RECT rt;
 		HDC hdc = GetDC(hWnd);
+		GetClientRect(hWnd, &rt);
+		memDC = CreateCompatibleDC(hdc);
+		memBitmap = CreateCompatibleBitmap(hdc, rt.right, rt.bottom);
+		oldBitmap = (HBITMAP)SelectObject(memDC, memBitmap);
 
-		Rectangle(hdc, startBtn.left, startBtn.top, startBtn.right, startBtn.bottom);
-		Rectangle(hdc, endBtn.left, endBtn.top, endBtn.right, endBtn.bottom);
-		string str = "게임 시작";
-		TextOutA(hdc, WINSIZEX / 2 - 90, WINSIZEY / 2 - 85, str.c_str(), str.length());
-		str = "게임 종료";
-		TextOutA(hdc, WINSIZEX / 2 - 90, WINSIZEY / 2 + 15, str.c_str(), str.length());
+		FillRect(memDC, &rt, (HBRUSH)GetStockObject(WHITE_BRUSH));
+		BitBlt(hdc, 0, 0, rt.right, rt.bottom, memDC, 0, 0, SRCCOPY);
 
 		ReleaseDC(hWnd, hdc);
 	}
@@ -177,35 +178,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
-	case WM_LBUTTONDOWN:
+	case WM_LBUTTONUP:
 	{
 		if (!isStart)
 		{
 			ptMouse.x = GET_X_LPARAM(lParam);
 			ptMouse.y = GET_Y_LPARAM(lParam);
 		}
-	}
-	break;
-	case WM_LBUTTONUP:
-	{
-		if (PtInRect(&startBtn, ptMouse))
+
+		if (PtInRect(&startBtn, ptMouse))	// 스타트 버튼을 눌렀을 때
 		{
 			isStart = TRUE;
+			ptPos1.x = WINSIZEX / 2;
 			ptPos1.y = WINSIZEY - 100;
 
 			SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 그리고, 점수를 세기 위한 타이머
 			SetTimer(hWnd, 2, 1000, NULL);	// 시간을 측정하기 위한 타이머
-		} 
-		if (PtInRect(&endBtn, ptMouse))
+		}
+		if (PtInRect(&endBtn, ptMouse))	// 종료 버튼을 눌렀을 때
 		{
 			exit(0);
 		}
-		if (PtInRect(&retryBtn, ptMouse))
+		if (PtInRect(&retryBtn, ptMouse))	 // 다시 시작 버튼을 눌렀을 때
 		{
-			ptPos1.x = WINSIZEX / 2 + 50;
+			ptPos1.x = WINSIZEX / 2;
+			ptPos1.y = WINSIZEY - 100;
 			hp = 1;
 
-			SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 그리고, 점수를 세기 위한 타이머
+			SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 연산(?)하기 위한 타이머
 			SetTimer(hWnd, 2, 1000, NULL);	// 시간을 측정하기 위한 타이머
 		}
 	}
@@ -228,21 +228,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if (isStart)
 			{
-
 				loop();
+
+				nScore = time * 100.f;
 
 				InvalidateRect(hWnd, NULL, TRUE);
 
-				nLevel = nScore / 100 + 1;
+				//nLevel = nScore / 100 + 1;
 
-				rtBox1 = RECT_MAKE(ptPos1.x, ptPos1.y, 30);	// 플레이어 그리기
+				rtBox1 = RECT_MAKE(ptPos1.x, ptPos1.y, 30);	// 플레이어의 RECT 생성
 
 				if (nDelay >= 30)
 				{
-					tagBox box;	// 똥
+					int i = rand() % 2;
+					int arr[2] = { 0, WINSIZEY - 50 };
+
+					tagBox box;	// 화살
 					box.rt.left = rand() % (WINSIZEX - 50);
 					box.rt.right = box.rt.left + 30;
-					box.rt.top = rand() % (WINSIZEY - 50);
+					box.rt.top = arr[i];
 					box.rt.bottom = box.rt.top + 30;
 
 					box.speed = rand() % 12 + 5;
@@ -251,21 +255,55 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					nDelay = rand() % 30;
 				}
 				else
-					nDelay += nLevel;
+					nDelay +=1;
 
 				vector<tagBox>::iterator iter;
 
 				for (iter = vecBox.begin(); iter != vecBox.end(); iter++)
 				{
-					iter->rt.top += iter->speed;
-					iter->rt.bottom += iter->speed;
+					//iter->rt.top += iter->speed;
+					//iter->rt.bottom += iter->speed;
+					arrow_x = ptPos1.x - iter->rt.left;
+					arrow_y = ptPos1.y - iter->rt.top;
+
+					dis = sqrtf(powf(arrow_x, 2) + powf(arrow_y, 2));	// 화살이 생성된 위치와 플레이어 사이의 거리 구하기
+
+					// 벡터 정규화
+					if (dis != 0)
+					{
+						arrow_x = arrow_x / dis;
+						arrow_y = arrow_y / dis;
+					}
+
+					arrow_speed_x = arrow_x * 2.f;
+					arrow_speed_y = arrow_y * 2.f;
+
+					//iter->rt.left += arrow_speed_x;
+					//iter->rt.right += arrow_speed_x;
+					//iter->rt.top += arrow_speed_y;
+					//iter->rt.bottom += arrow_speed_y;
+					OffsetRect(&iter->rt, arrow_speed_x, arrow_speed_y);
 
 					RECT rt;
 					RECT rtIter = iter->rt;
 
 					if (iter->rt.top > WINSIZEY)
 					{
-						nScore++;
+						vecBox.erase(iter);
+						break;
+					}
+					else if (iter->rt.bottom < 0)
+					{
+						vecBox.erase(iter);
+						break;
+					}
+					else if (iter->rt.left < 0)
+					{
+						vecBox.erase(iter);
+						break;
+					}
+					else if (iter->rt.right > WINSIZEX)
+					{
 						vecBox.erase(iter);
 						break;
 					}
@@ -277,7 +315,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					}
 					else if (PtInRect(&rtIter, ptMouse))
 					{
-						nScore += 5;
 						vecBox.erase(iter);
 						break;
 					}
@@ -287,8 +324,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 		case 2:
 		{
-			if(isStart)
+			if (isStart)
+			{
 				time++;
+			}
 		}
 		break;
 		}
@@ -299,13 +338,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
-		if (isStart)
+		if (!check)	// 게임이 아직 시작되지 않았을 때
 		{
-			Rectangle(hdc, rtBox1.left, rtBox1.top, rtBox1.right, rtBox1.bottom);	// 플레이어 그리기
+			DRAW_RECT(hdc, startBtn);
+			DRAW_RECT(hdc, endBtn);
+			string str = "게임 시작";
+			TextOutA(hdc, WINSIZEX / 2 - 90, WINSIZEY / 2 - 85, str.c_str(), str.length());
+			str = "게임 종료";
+			TextOutA(hdc, WINSIZEX / 2 - 90, WINSIZEY / 2 + 15, str.c_str(), str.length());
 
-			for (int i = 0; i < vecBox.size(); i++)
+			check = TRUE;
+		}
+
+		if (isStart)	// 게임이 시작 되었을 때
+		{
+			DRAW_RECT(hdc, rtBox1);	// 플레이어  그리기
+
+			for (int i = 0; i < vecBox.size(); i++)	// 똥 그리기
 			{
-				Rectangle(hdc, vecBox[i].rt.left, vecBox[i].rt.top, vecBox[i].rt.right, vecBox[i].rt.bottom);
+				DRAW_RECT(hdc, vecBox[i].rt);	
 			}
 
 			char szBuf[32]; // 변환을 위한 변수
@@ -331,7 +382,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			str = "당신의 체력: " + str;
 			TextOutA(hdc, 10, 70, str.c_str(), str.length());
 
-			if (hp == 0)
+			if (hp == 0)	// 플레이어가 죽었을 때
 			{
 				TextOutA(hdc, WINSIZEX / 2 - 50, WINSIZEY / 2 - 50, "GAME OVER", 9);
 				KillTimer(hWnd, 1);
@@ -339,6 +390,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				TextOutA(hdc, retryBtn.left, retryBtn.top, "RETRY", 5);
 				startBtn = { 0, 0, 0, 0 };
 				endBtn = { 0, 0, 0, 0 };
+				vecBox.clear();
+				time = 0;
+				nScore = 0;
+				nLevel = 0;
+				nDelay = 50;
 			}
 		}
 

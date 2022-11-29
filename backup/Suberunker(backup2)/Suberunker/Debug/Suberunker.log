@@ -1,8 +1,12 @@
 ﻿  Suberunker.cpp
-C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\Suberunker\Suberunker\framework.h(91,20): warning C4244: '+=': 'FLOAT'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\Suberunker\Suberunker\framework.h(92,20): warning C4244: '+=': 'FLOAT'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\Suberunker\Suberunker\Suberunker.cpp(248,30): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\Suberunker\Suberunker\Suberunker.cpp(260,26): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\Suberunker\Suberunker\Suberunker.cpp(261,29): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\Suberunker\Suberunker\Suberunker.cpp(306,22): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-  Suberunker.vcxproj -> C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\Suberunker\Debug\Suberunker.exe
+C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup2)\Suberunker\framework.h(114,20): warning C4244: '+=': 'FLOAT'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup2)\Suberunker\framework.h(115,20): warning C4244: '+=': 'FLOAT'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup2)\Suberunker\Suberunker.cpp(253,30): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup2)\Suberunker\Suberunker.cpp(270,23): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup2)\Suberunker\Suberunker.cpp(270,42): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup2)\Suberunker\Suberunker.cpp(286,43): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup2)\Suberunker\Suberunker.cpp(286,28): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup2)\Suberunker\Suberunker.cpp(359,22): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup2)\Suberunker\Suberunker.cpp(372,12): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup2)\Suberunker\Suberunker.cpp(377,12): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Suberunker.vcxproj -> C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup2)\Debug\Suberunker.exe

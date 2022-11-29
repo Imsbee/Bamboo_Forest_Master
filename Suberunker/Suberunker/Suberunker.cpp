@@ -156,6 +156,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_CREATE:
 	{
+		/*
 		RECT rt;
 		HDC hdc = GetDC(hWnd);
 		GetClientRect(hWnd, &rt);
@@ -167,6 +168,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		BitBlt(hdc, 0, 0, rt.right, rt.bottom, memDC, 0, 0, SRCCOPY);
 
 		ReleaseDC(hWnd, hdc);
+		*/
 	}
 	break;
 	case WM_MOUSEMOVE:
@@ -194,6 +196,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 그리고, 점수를 세기 위한 타이머
 			SetTimer(hWnd, 2, 1000, NULL);	// 시간을 측정하기 위한 타이머
+			SetTimer(hWnd, 3, 5000, NULL);
 		}
 		if (PtInRect(&endBtn, ptMouse))	// 종료 버튼을 눌렀을 때
 		{
@@ -207,6 +210,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 연산(?)하기 위한 타이머
 			SetTimer(hWnd, 2, 1000, NULL);	// 시간을 측정하기 위한 타이머
+			SetTimer(hWnd, 3, 5000, NULL);
 		}
 	}
 	break;
@@ -264,16 +268,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				{
 					//iter->rt.top += iter->speed;
 					//iter->rt.bottom += iter->speed;
-					arrow_x = ptPos1.x - iter->rt.left;
-					arrow_y = ptPos1.y - iter->rt.top;
+					arrow_x = save_pos.x - iter->rt.left;
+					arrow_y = save_pos.y - iter->rt.top;
 
 					dis = sqrtf(powf(arrow_x, 2) + powf(arrow_y, 2));	// 화살이 생성된 위치와 플레이어 사이의 거리 구하기
 
 					// 벡터 정규화
 					if (dis != 0)
 					{
-						arrow_x = arrow_x / dis;
-						arrow_y = arrow_y / dis;
+						arrow_x = dis / dis;
+						arrow_y = dis / dis;
 					}
 
 					arrow_speed_x = arrow_x * 2.f;
@@ -328,8 +332,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (isStart)
 			{
 				time++;
-				
 			}
+		}
+		break;
+		case 3:
+		{
+			save_pos.x = ptPos1.x;
+			save_pos.y = ptPos1.y;
 		}
 		break;
 		}

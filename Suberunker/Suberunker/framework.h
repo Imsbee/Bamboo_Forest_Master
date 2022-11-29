@@ -55,6 +55,8 @@ double nScore = 1;	// 유저의 점수
 double time = 1.f;	// 시간
 int hp = 1; // 플레이어의 hp
 
+POINT save_pos;
+
 
 HDC memDC;
 HBITMAP memBitmap;
