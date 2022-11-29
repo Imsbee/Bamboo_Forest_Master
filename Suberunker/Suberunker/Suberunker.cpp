@@ -124,6 +124,84 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	return TRUE;
 }
 
+
+DWORD WINAPI MAKE_ARROW(LPVOID lpvoid)
+{
+	POINT pos = userPos;
+	int i = rand() % 2;
+	int arr[2] = { 0, WINSIZEY - 50 };
+
+	tagBox arrow;	// 화살
+	arrow.rt.left = rand() % (WINSIZEX - 50);
+	arrow.rt.right = arrow.rt.left + 30;
+	arrow.rt.top = arr[i];
+	arrow.rt.bottom = arrow.rt.top + 30;
+
+	arrow.speed = rand() % 12 + 5;
+
+	vecBox.push_back(arrow);
+	nDelay = rand() % 30;
+
+	vector<tagBox>::iterator iter;
+
+	for (iter = vecBox.begin(); iter != vecBox.end(); iter++)
+	{
+		arrow_x = pos.x - iter->rt.left;
+		arrow_y = pos.y - iter->rt.top;
+	
+		dis = sqrtf(powf(arrow_x, 2) + powf(arrow_y, 2));	// 화살이 생성된 위치와 플레이어 사이의 거리 구하기
+
+		// 벡터 정규화
+		if (dis != 0)
+		{
+			arrow_x = arrow_x / dis;
+			arrow_y = arrow_y / dis;
+		}
+
+		arrow_speed_x = arrow_x * 2.f;
+		arrow_speed_y = arrow_y * 2.f;
+
+		OffsetRect(&iter->rt, arrow_speed_x, arrow_speed_y);
+
+		RECT rt;
+		RECT rtIter = iter->rt;
+
+		if (iter->rt.top > WINSIZEY)
+		{
+			vecBox.erase(iter);
+			break;
+		}
+		else if (iter->rt.bottom < 0)
+		{
+			vecBox.erase(iter);
+			break;
+		}
+		else if (iter->rt.left < 0)
+		{
+			vecBox.erase(iter);
+			break;
+		}
+		else if (iter->rt.right > WINSIZEX)
+		{
+			vecBox.erase(iter);
+			break;
+		}
+		else if (IntersectRect(&rt, &userRect, &rtIter))
+		{
+			hp--;
+			vecBox.erase(iter);
+			break;
+		}
+		else if (PtInRect(&rtIter, ptMouse))
+		{
+			vecBox.erase(iter);
+			break;
+		}
+	}
+
+	return 1;
+}
+
 //  함수: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
 //  용도: 주 창의 메시지를 처리합니다.
@@ -167,6 +245,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		BitBlt(hdc, 0, 0, rt.right, rt.bottom, memDC, 0, 0, SRCCOPY);
 
 		ReleaseDC(hWnd, hdc);
+
+		MAKE_ARROW(NULL);
 	}
 	break;
 	case WM_MOUSEMOVE:
@@ -189,8 +269,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (PtInRect(&startBtn, ptMouse))	// 스타트 버튼을 눌렀을 때
 		{
 			isStart = TRUE;
-			ptPos1.x = WINSIZEX / 2;
-			ptPos1.y = WINSIZEY - 100;
+			userPos.x = WINSIZEX / 2;
+			userPos.y = WINSIZEY - 100;
 
 			SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 그리고, 점수를 세기 위한 타이머
 			SetTimer(hWnd, 2, 1000, NULL);	// 시간을 측정하기 위한 타이머
@@ -201,8 +281,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		if (PtInRect(&retryBtn, ptMouse))	 // 다시 시작 버튼을 눌렀을 때
 		{
-			ptPos1.x = WINSIZEX / 2;
-			ptPos1.y = WINSIZEY - 100;
+			userPos.x = WINSIZEX / 2;
+			userPos.y = WINSIZEY - 100;
 			hp = 1;
 
 			SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 연산(?)하기 위한 타이머
@@ -228,98 +308,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if (isStart)
 			{
-
 				loop();
-
-				nScore = time * 100.f;
 
 				InvalidateRect(hWnd, NULL, TRUE);
 
-				//nLevel = nScore / 100 + 1;
-
-				rtBox1 = RECT_MAKE(ptPos1.x, ptPos1.y, 30);	// 플레이어 그리기
+				userRect = RECT_MAKE(userPos.x, userPos.y, 30);	// 플레이어 그리기
 
 				if (nDelay >= 30)
 				{
-					int i = rand() % 2;
-					int arr[2] = { 0, WINSIZEY - 50 };
-
-					tagBox box;	// 화살
-					box.rt.left = rand() % (WINSIZEX - 50);
-					box.rt.right = box.rt.left + 30;
-					box.rt.top = arr[i];
-					box.rt.bottom = box.rt.top + 30;
-
-					box.speed = rand() % 12 + 5;
-
-					vecBox.push_back(box);
-					nDelay = rand() % 30;
+					
 				}
 				else
 					nDelay +=1;
 
-				vector<tagBox>::iterator iter;
-
-				for (iter = vecBox.begin(); iter != vecBox.end(); iter++)
-				{
-					//iter->rt.top += iter->speed;
-					//iter->rt.bottom += iter->speed;
-					arrow_x = ptPos1.x - iter->rt.left;
-					arrow_y = ptPos1.y - iter->rt.top;
-
-					dis = sqrtf(powf(arrow_x, 2) + powf(arrow_y, 2));	// 화살이 생성된 위치와 플레이어 사이의 거리 구하기
-
-					// 벡터 정규화
-					if (dis != 0)
-					{
-						arrow_x = arrow_x / dis;
-						arrow_y = arrow_y / dis;
-					}
-
-					arrow_speed_x = arrow_x * 2.f;
-					arrow_speed_y = arrow_y * 2.f;
-
-					//iter->rt.left += arrow_speed_x;
-					//iter->rt.right += arrow_speed_x;
-					//iter->rt.top += arrow_speed_y;
-					//iter->rt.bottom += arrow_speed_y;
-					OffsetRect(&iter->rt, arrow_speed_x, arrow_speed_y);
-
-					RECT rt;
-					RECT rtIter = iter->rt;
-
-					if (iter->rt.top > WINSIZEY)
-					{
-						vecBox.erase(iter);
-						break;
-					}
-					else if (iter->rt.bottom < 0)
-					{
-						vecBox.erase(iter);
-						break;
-					}
-					else if (iter->rt.left < 0)
-					{
-						vecBox.erase(iter);
-						break;
-					}
-					else if (iter->rt.right > WINSIZEX)
-					{
-						vecBox.erase(iter);
-						break;
-					}
-					else if (IntersectRect(&rt, &rtBox1, &rtIter))
-					{
-						hp--;
-						vecBox.erase(iter);
-						break;
-					}
-					else if (PtInRect(&rtIter, ptMouse))
-					{
-						vecBox.erase(iter);
-						break;
-					}
-				}
+				
 			}
 		}
 		break;
@@ -328,7 +330,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (isStart)
 			{
 				time++;
-				
+				nScore = time * 100.f;
 			}
 		}
 		break;
@@ -354,7 +356,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (isStart)	// 게임이 시작 되었을 때
 		{
-			DRAW_RECT(hdc, rtBox1);	// 플레이어  그리기
+			DRAW_RECT(hdc, userRect);	// 플레이어  그리기
 
 			for (int i = 0; i < vecBox.size(); i++)	// 똥 그리기
 			{
