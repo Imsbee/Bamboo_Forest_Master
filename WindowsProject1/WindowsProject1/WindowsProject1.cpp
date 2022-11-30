@@ -170,7 +170,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 	{
 		userPos = { WINSIZEX / 2 - 30, WINSIZEY - 100 };		// 플레이어의 시작 위치 지정
-		SetTimer(hWnd, 1, 10, NULL);										// 1번 타이머 설정
+		SetTimer(hWnd, 1, 10, NULL);							// 1번 타이머 설정
 		SetTimer(hWnd, 2, 1000, NULL);
 	}
 	break;
@@ -200,8 +200,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				int i = rand() % 2;
 				int arr[2] = { 0, WINSIZEY - 100 };
 
-				
-
 				arrowBox arrow;    // 화살의 RECT
 				arrow.rt.left = rand() % (WINSIZEX - 50);
 				arrow.rt.right = arrow.rt.left + 30;
@@ -225,8 +223,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				arrow_x = arrow_x / dis;
 				arrow_y = arrow_y / dis;
 
-				arrow_speed_x = arrow_x * 2.f;
-				arrow_speed_y = arrow_y * 2.f;
+				arrow_speed_x = arrow_x * 3.f;
+				arrow_speed_y = arrow_y * 3.f;
 
 				OffsetRect(&iter->rt, arrow_speed_x, arrow_speed_y);
 
@@ -258,7 +256,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					arrowVec.erase(iter);
 					break;
 				}
-
 			}
 		}
 		break;

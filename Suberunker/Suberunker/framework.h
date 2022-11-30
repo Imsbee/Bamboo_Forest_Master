@@ -24,43 +24,40 @@
 
 using namespace std;
 
+// 유저와 관련된 변수들
+RECT userRect;	// 플레이어의 RECT
+POINT userPos;	// 플레이어의 위치
+POINT ptMouse;  // 마우스의 위치를 저장할 변수
+int hp = 1;				// 플레이어의 hp
+
+// 화살과 관련된 변수들
+// 화살을 담을 구조체
+struct tagBox
+{
+	RECT rt;
+};
+float arrow_speed_x;	// 화살의 x좌표 속도
+float arrow_speed_y;	// 화살의 y좌표 속도
+float dis;				// 화살과 플레이어 사이의 거리
+float arrow_x;			// 화살의 x 좌표
+float arrow_y;			// 화살의 y 좌표
+vector<tagBox> arrowBox;	// 화살을 담을 벡터구조체
+
+
+// 부가적인 변수들
+int nDelay = 50;		// 화살의 시간 간격
+int nLevel;				// 화살의 발생 시간 간격을 조절하기 위한 난이도 변수
+float nScore = 1;		// 유저의 점수
+float time = 1.f;		// 시간
 BOOL check;	// 게임 시작 버튼과 종료 버튼을 출력하기 위해 상태를 체크해주는 변수
 BOOL isStart;	// 게임이 시작되었는지 판단하는 변수
 BOOL KeyBuffer[256];	// 플레이어가 누른 wParam값을 TRUE로 변경하기 위한 변수
 RECT startBtn = { WINSIZEX / 2 - 150, WINSIZEY / 2 - 100, WINSIZEX / 2 + 50, WINSIZEY / 2 - 50 };	// 시작 버튼
 RECT endBtn = { WINSIZEX / 2 - 150, WINSIZEY / 2, WINSIZEX / 2 + 50, WINSIZEY / 2 + 50 };	// 종료 버튼
 RECT retryBtn = { WINSIZEX / 2 - 35, WINSIZEY / 2 , WINSIZEX / 2 + 10, WINSIZEY / 2 + 10 };	// 다시 시작 버튼
-RECT userRect;	// 플레이어의 RECT
-POINT userPos;	// 플레이어의 위치
-POINT ptMouse;  // 마우스의 위치를 저장할 변수
-
-// 화살을 담을 구조체
-struct tagBox
-{
-	RECT rt;
-	float speed;
-};
-
-
-double arrow_speed_x;	// 화살의 x좌표 속도
-double arrow_speed_y;	// 화살의 y좌표 속도
-double dis;				// 화살과 플레이어 사이의 거리
-double arrow_x;			// 화살의 x 좌표
-double arrow_y;			// 화살의 y 좌표
-
-vector<tagBox> vecBox;	// 화살을 담을 벡터구조체
-int nDelay = 50;		// 화살의 시간 간격
-int nLevel;				// 화살의 발생 시간 간격을 조절하기 위한 난이도 변수
-double nScore = 1;		// 유저의 점수
-double time = 1.f;		// 시간
-int hp = 1;				// 플레이어의 hp
-
-POINT save_pos;
-
-
-HDC memDC;
-HBITMAP memBitmap;
-HBITMAP oldBitmap;
+HDC memDC;	// 가상공간에서 사용할 DC
+HBITMAP memBitmap;	// 가상 공간에서 사용할 Bitmap
+HBITMAP oldBitmap;	// 원래 사용하던 Bitmap을 저장하기 위한 Bitmap
 
 
 // RECT를 만들어주는 함수
