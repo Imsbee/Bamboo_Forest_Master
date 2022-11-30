@@ -56,8 +56,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	return (int)msg.wParam;
 }
 
-
-
 //
 //  함수: MyRegisterClass()
 //
@@ -167,44 +165,52 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_LBUTTONUP:
 	{
+		// 게임이 아직 시작되지 않았을 때
 		if (!isStart)
 		{
 			ptMouse.x = GET_X_LPARAM(lParam);
 			ptMouse.y = GET_Y_LPARAM(lParam);
 		}
-
-		if (PtInRect(&startBtn, ptMouse))	// 스타트 버튼을 눌렀을 때
+		// 스타트 버튼을 눌렀을 때
+		if (PtInRect(&startBtn, ptMouse))	
 		{
 			isStart = TRUE;
 			userPos.x = WINSIZEX / 2;
 			userPos.y = WINSIZEY - 100;
 
-			SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 그리고, 점수를 세기 위한 타이머
-			SetTimer(hWnd, 2, 1000, NULL);	// 시간을 측정하기 위한 타이머
-			SetTimer(hWnd, 3, 5000, NULL);
+			// 플레이어와 똥을 그리고, 점수를 세기 위한 타이머
+			SetTimer(hWnd, 1, 10, NULL);	
+			// 시간을 측정하기 위한 타이머
+			SetTimer(hWnd, 2, 1000, NULL);	
 		}
-		if (PtInRect(&endBtn, ptMouse))	// 종료 버튼을 눌렀을 때
+		// 종료 버튼을 눌렀을 때
+		if (PtInRect(&endBtn, ptMouse))	
 		{
 			exit(0);
 		}
-		if (PtInRect(&retryBtn, ptMouse))	 // 다시 시작 버튼을 눌렀을 때
+		// 다시 시작 버튼을 눌렀을 때
+		if (PtInRect(&retryBtn, ptMouse))	 
 		{
 			userPos.x = WINSIZEX / 2;
 			userPos.y = WINSIZEY - 100;
 			hp = 1;
 
-			SetTimer(hWnd, 1, 10, NULL);	// 플레이어와 똥을 연산(?)하기 위한 타이머
-			SetTimer(hWnd, 2, 1000, NULL);	// 시간을 측정하기 위한 타이머
+			// 플레이어와 똥을 연산(?)하기 위한 타이머
+			SetTimer(hWnd, 1, 10, NULL);	
+			// 시간을 측정하기 위한 타이머
+			SetTimer(hWnd, 2, 1000, NULL);	
 		}
 	}
 	break;
 	case WM_KEYDOWN:
 	{
+		// 누른 키의 bool을 true로 설정
 		KeyBuffer[wParam] = TRUE;
 	}
 	break;
 	case WM_KEYUP:
 	{
+		// 누른 키의 bool을 false로 설정
 		KeyBuffer[wParam] = FALSE;
 	}
 	break;
@@ -215,19 +221,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// 0.01초마다 세는 타이머
 		case 1:
 		{
-			if (isStart)    // 게임이 시작되었을 때
+			// 게임이 시작되었을 때
+			if (isStart)    
 			{
-				loop();	// 플레이어의 움직임을 연산하는 함수
-				InvalidateRect(hWnd, NULL, FALSE);	// 화면 무효화 호출
+				// 플레이어의 움직임을 연산하는 함수
+				loop();	
+				// 화면 무효화 호출
+				InvalidateRect(hWnd, NULL, FALSE);	
 
-				userRect = RECT_MAKE(userPos.x, userPos.y, 20);	// 크기가 20인 플레이어 그리기
+				// 크기가 20인 플레이어 그리기
+				userRect = RECT_MAKE(userPos.x, userPos.y, 20);	
 
 				if (nDelay >= 30)
 				{
 					int i = rand() % 2;
 					int arr[2] = { 0, WINSIZEY - 50 };
 
-					tagBox arrow;	// 화살
+					// 화살
+					tagBox arrow;	
 					arrow.rt.left = rand() % (WINSIZEX - 50);
 					arrow.rt.right = arrow.rt.left + 10;
 					arrow.rt.top = arr[i];
@@ -243,13 +254,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 				for (iter = arrowBox.begin(); iter != arrowBox.end(); iter++)
 				{
-					arrow_x = userPos.x - iter->rt.left;
+					// 벡터의 좌표 구하기
+					arrow_x = userPos.x - iter->rt.left;	
 					arrow_y = userPos.y - iter->rt.top;
 
-					dis = sqrtf(powf(arrow_x, 2) + powf(arrow_y, 2));	// 화살이 생성된 위치와 플레이어 사이의 거리 구하기
-
+					// 화살이 생성된 위치와 플레이어 사이의 거리 구하기
+					dis = sqrtf(powf(arrow_x, 2) + powf(arrow_y, 2));	
+					
+					// 벡터 정규화
 					arrow_x = arrow_x / dis;
 					arrow_y = arrow_y / dis;
+
+					// 화살의 속도 정하기
 					arrow_speed_x = arrow_x * 2.f;
 					arrow_speed_y = arrow_y * 2.f;
 
@@ -258,37 +274,39 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					RECT rt;
 					RECT rtIter = iter->rt;
 
-					if (iter->rt.top > WINSIZEY)
+					if (iter->rt.top > WINSIZEY)    // 화살이 화면의 세로범위 밖으로 나갔을 때
 					{
 						arrowBox.erase(iter);
 						break;
 					}
-					else if (iter->rt.bottom < 0)
+					else if (iter->rt.bottom < 0)    // 화살이 화면의 세로범위 밖으로 나갔을 때
 					{
 						arrowBox.erase(iter);
 						break;
 					}
-					else if (iter->rt.left < 0)
+					else if (iter->rt.left < 0)    // 화살이 화면의 가로범위 밖으로 나갔을 때
 					{
 						arrowBox.erase(iter);
 						break;
 					}
-					else if (iter->rt.right > WINSIZEX)
+					else if (iter->rt.right > WINSIZEX)    // 화살이 화면의 가로범위 밖으로 나갔을 때
 					{
 						arrowBox.erase(iter);
 						break;
 					}
-					else if (IntersectRect(&rt, &userRect, &rtIter))
+					else if (IntersectRect(&rt, &userRect, &rtIter))    // 유저와 화살이 닿았을 때
 					{
 						hp--;
 						arrowBox.erase(iter);
 						break;
 					}
-					else if (PtInRect(&rtIter, ptMouse))
+					/*
+					else if (PtInRect(&rtIter, ptMouse))    // 마우스 포인터가 화살에 닿았을 때
 					{
 						arrowBox.erase(iter);
 						break;
 					}
+					*/
 				}
 
 			}

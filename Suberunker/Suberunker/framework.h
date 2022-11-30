@@ -28,7 +28,7 @@ using namespace std;
 RECT userRect;	// 플레이어의 RECT
 POINT userPos;	// 플레이어의 위치
 POINT ptMouse;  // 마우스의 위치를 저장할 변수
-int hp = 1;				// 플레이어의 hp
+int hp = 1;		// 플레이어의 hp
 
 // 화살과 관련된 변수들
 // 화살을 담을 구조체
@@ -36,11 +36,11 @@ struct tagBox
 {
 	RECT rt;
 };
-float arrow_speed_x;	// 화살의 x좌표 속도
-float arrow_speed_y;	// 화살의 y좌표 속도
-float dis;				// 화살과 플레이어 사이의 거리
-float arrow_x;			// 화살의 x 좌표
-float arrow_y;			// 화살의 y 좌표
+float arrow_speed_x;		// 화살의 x좌표 속도
+float arrow_speed_y;		// 화살의 y좌표 속도
+float dis;					// 화살과 플레이어 사이의 거리
+float arrow_x;				// 화살의 x 좌표
+float arrow_y;				// 화살의 y 좌표
 vector<tagBox> arrowBox;	// 화살을 담을 벡터구조체
 
 
@@ -49,15 +49,15 @@ int nDelay = 50;		// 화살의 시간 간격
 int nLevel;				// 화살의 발생 시간 간격을 조절하기 위한 난이도 변수
 float nScore = 1;		// 유저의 점수
 float time = 1.f;		// 시간
-BOOL check;	// 게임 시작 버튼과 종료 버튼을 출력하기 위해 상태를 체크해주는 변수
-BOOL isStart;	// 게임이 시작되었는지 판단하는 변수
+BOOL check;				// 게임 시작 버튼과 종료 버튼을 출력하기 위해 상태를 체크해주는 변수
+BOOL isStart;			// 게임이 시작되었는지 판단하는 변수
 BOOL KeyBuffer[256];	// 플레이어가 누른 wParam값을 TRUE로 변경하기 위한 변수
 RECT startBtn = { WINSIZEX / 2 - 150, WINSIZEY / 2 - 100, WINSIZEX / 2 + 50, WINSIZEY / 2 - 50 };	// 시작 버튼
-RECT endBtn = { WINSIZEX / 2 - 150, WINSIZEY / 2, WINSIZEX / 2 + 50, WINSIZEY / 2 + 50 };	// 종료 버튼
-RECT retryBtn = { WINSIZEX / 2 - 35, WINSIZEY / 2 , WINSIZEX / 2 + 10, WINSIZEY / 2 + 10 };	// 다시 시작 버튼
-HDC memDC;	// 가상공간에서 사용할 DC
-HBITMAP memBitmap;	// 가상 공간에서 사용할 Bitmap
-HBITMAP oldBitmap;	// 원래 사용하던 Bitmap을 저장하기 위한 Bitmap
+RECT endBtn = { WINSIZEX / 2 - 150, WINSIZEY / 2, WINSIZEX / 2 + 50, WINSIZEY / 2 + 50 };			// 종료 버튼
+RECT retryBtn = { WINSIZEX / 2 - 35, WINSIZEY / 2 , WINSIZEX / 2 + 10, WINSIZEY / 2 + 10 };			// 다시 시작 버튼
+HDC memDC;				// 가상공간에서 사용할 DC
+HBITMAP memBitmap;		// 가상 공간에서 사용할 Bitmap
+HBITMAP oldBitmap;		// 원래 사용하던 Bitmap을 저장하기 위한 Bitmap
 
 
 // RECT를 만들어주는 함수
@@ -81,31 +81,41 @@ void DRAW_RECT(HDC hdc, RECT rect)
 // 플레이어의 움직임을 연산하기 위한 함수
 void loop()
 {
-	D2D1_POINT_2F offset = { 0, 0 };	// 이동 값을 +하기 위한 변수
+	// 이동 값을 +하기 위한 변수
+	D2D1_POINT_2F offset = { 0, 0 };	
 
-	if (KeyBuffer[VK_LEFT] == KeyBuffer[VK_RIGHT])	// 둘다 FALSE인 경우 값을 더하지 않음
+	// 둘다 FALSE인 경우 값을 더하지 않음
+	if (KeyBuffer[VK_LEFT] == KeyBuffer[VK_RIGHT])	
 		offset.x = 0.f;
-	else if (KeyBuffer[VK_LEFT])	// 왼쪽 버튼을 누른 경우
+	// 왼쪽 버튼을 누른 경우
+	else if (KeyBuffer[VK_LEFT])	
 	{
-		if (userPos.x > 0)	 // 그라운드 밖으로 나가게 하지 않기 위한 if문
+		// 그라운드 밖으로 나가게 하지 않기 위한 if문
+		if (userPos.x > 0)	 
 			offset.x = -10.f;
 	}
-	else // 오른쪽 버튼을 누른 경우
+	// 오른쪽 버튼을 누른 경우
+	else 
 	{
-		if (userPos.x < WINSIZEX - 50)	// 그라운드 밖으로 나가게 하지 않기 위한 if문
+		// 그라운드 밖으로 나가게 하지 않기 위한 if문
+		if (userPos.x < WINSIZEX - 50)	
 			offset.x = 10.f;
 	}
-
-	if (KeyBuffer[VK_UP] == KeyBuffer[VK_DOWN])	// 둘다 FALSE인 경우 값을 더하지 않음
+	// 둘다 FALSE인 경우 값을 더하지 않음
+	if (KeyBuffer[VK_UP] == KeyBuffer[VK_DOWN])	
 		offset.y = 0.f;
-	else if (KeyBuffer[VK_UP])	// 위쪽 버튼을 누른 경우
+	// 위쪽 버튼을 누른 경우
+	else if (KeyBuffer[VK_UP])	
 	{
-		if (userPos.y > 0)	// 그라운드 밖으로 나가게 하지 않기 위한 if문
+		// 그라운드 밖으로 나가게 하지 않기 위한 if문
+		if (userPos.y > 0)	
 			offset.y = -10.f;
 	}
-	else // 아래쪽 버튼을 누른 경우
+	// 아래쪽 버튼을 누른 경우
+	else 
 	{
-		if (userPos.y < WINSIZEY - 100)	// 그라운드 밖으로 나가게 하지 않기 위한 if문
+		// 그라운드 밖으로 나가게 하지 않기 위한 if문
+		if (userPos.y < WINSIZEY - 100)	
 			offset.y = 10.f;
 	}
 
