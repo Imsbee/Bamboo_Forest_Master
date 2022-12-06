@@ -15,6 +15,7 @@
 #include <tchar.h>
 #include <vector>
 #include <string>
+#include <time.h>
 #include <windowsx.h>
 #include <D2DBaseTypes.h>
 #include <cmath>
@@ -38,6 +39,21 @@ struct bottomBox
 {
 	RECT rt;
 };
+// 상단패턴 화살
+struct topBox
+{
+	RECT rt;
+};
+// 우측패턴 화살
+struct rightBox
+{
+	RECT rt;
+};
+// 좌측패턴 화살
+struct leftBox
+{
+	RECT rt;
+};
 // 유저의 위치로 발사되는 화살
 struct tagBox
 {
@@ -51,13 +67,16 @@ float arrow_x;				// 화살의 x 좌표
 float arrow_y;				// 화살의 y 좌표
 vector<tagBox> arrowBox;	// 유저의 위치로 발사되는 화살을 담을 벡터구조체
 vector<bottomBox> btArrowBox;	// 하단 패턴 화살을 담을 벡터구조체
+vector<topBox> topArrowBox;	// 상단 패턴 화살을 담을 벡터구조체
+vector<leftBox> leftArrowBox;	// 우측 패턴 화살을 담을 벡터구조체
+vector<rightBox> rightArrowBox;	// 좌측 패턴 화살을 담을 벡터구조체
 
 
 // 부가적인 변수들
 int nDelay = 50;		// 화살의 시간 간격
-int nLevel;				// 화살의 발생 시간 간격을 조절하기 위한 난이도 변수
+int rand_num = 0;
 float nScore = 1;		// 유저의 점수
-float time = 0.f;		// 시간
+float gtime = 0.f;		// 시간
 BOOL check;				// 게임 시작 버튼과 종료 버튼을 출력하기 위해 상태를 체크해주는 변수
 BOOL isStart;			// 게임이 시작되었는지 판단하는 변수
 BOOL KeyBuffer[256];	// 플레이어가 누른 wParam값을 TRUE로 변경하기 위한 변수

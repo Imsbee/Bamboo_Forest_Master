@@ -1,7 +1,0 @@
-﻿  Suberunker.cpp
-C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup)\Suberunker\Suberunker.cpp(161,20): warning C4244: '+=': 'FLOAT'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup)\Suberunker\Suberunker.cpp(244,29): warning C4244: '=': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup)\Suberunker\Suberunker.cpp(256,25): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup)\Suberunker\Suberunker.cpp(257,28): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup)\Suberunker\Suberunker.cpp(298,21): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-  Suberunker.vcxproj -> C:\Users\zoshs\OneDrive\바탕 화면\VC++\Move_Rect\backup\Suberunker(backup)\Debug\Suberunker.exe

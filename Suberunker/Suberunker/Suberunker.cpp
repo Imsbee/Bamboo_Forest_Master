@@ -154,6 +154,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
+	case WM_CREATE:
+	{
+	}
+	break;
 	case WM_MOUSEMOVE:
 	{
 		if (isStart)
@@ -174,6 +178,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// 스타트 버튼을 눌렀을 때
 		if (PtInRect(&startBtn, ptMouse))	
 		{
+			srand((unsigned int)time(NULL));
+
 			isStart = TRUE;
 			userPos.x = WINSIZEX / 2;
 			userPos.y = WINSIZEY / 2;
@@ -184,6 +190,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetTimer(hWnd, 2, 1000, NULL);	
 			// 패턴1을 위한 타이머
 			SetTimer(hWnd, 3, 3000, NULL);
+			// 하단패턴을 사용하기 위한 타이머
+			SetTimer(hWnd, 4, 10000, NULL);
+			/*// 상단패턴을 사용하기 위한 타이머
+			SetTimer(hWnd, 5, 1000, NULL);
+			// 오른쪽패턴을 사용하기 위한 타이머
+			SetTimer(hWnd, 6, 3000, NULL);
+			// 좌측패턴을 사용하기 위한 타이머
+			SetTimer(hWnd, 7, 3000, NULL);*/
 		}
 		// 종료 버튼을 눌렀을 때
 		if (PtInRect(&endBtn, ptMouse))	
@@ -205,12 +219,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetTimer(hWnd, 3, 3000, NULL);
 			// 하단패턴을 사용하기 위한 타이머
 			SetTimer(hWnd, 4, 10000, NULL);
-			// 왼쪽패턴을 사용하기 위한 타이머
+			/*// 상단패턴을 사용하기 위한 타이머
 			SetTimer(hWnd, 5, 3000, NULL);
-			// 오른쪽패턴을 사용하기 위한 타이머
+			// 우측패턴을 사용하기 위한 타이머
 			SetTimer(hWnd, 6, 3000, NULL);
-			// 상단패턴을 사용하기 위한 타이머
-			SetTimer(hWnd, 7, 3000, NULL);
+			// 좌측패턴을 사용하기 위한 타이머
+			SetTimer(hWnd, 7, 3000, NULL);*/
 		}
 	}
 	break;
@@ -244,7 +258,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				// 크기가 20인 플레이어 그리기
 				userRect = RECT_MAKE(userPos.x, userPos.y, 20);	
 				
-				if (nDelay >= 30)
+				if (nDelay >= 50)
 				{
 					int i = rand() % 2;
 					int arr[2] = { 0, WINSIZEY - 50 };
@@ -263,22 +277,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				else
 					nDelay +=1;
 					
-				vector<bottomBox>::iterator bt_iter;
-
-				for (bt_iter = btArrowBox.begin(); bt_iter != btArrowBox.end(); bt_iter++)
-				{
-					bt_iter->rt.top -= 30;
-					bt_iter->rt.bottom -= 30;
-				}
-
-
 				vector<tagBox>::iterator iter;
 
 				for (iter = arrowBox.begin(); iter != arrowBox.end(); iter++)
 				{
 					// 벡터의 좌표 구하기
-					arrow_x = iter->pos.x - iter->rt.left;	
-					arrow_y = iter->pos.y - iter->rt.top;
+					arrow_x = (iter->pos.x/2) - (iter->rt.left/2);	
+					arrow_y = (iter->pos.y/2) - (iter->rt.top/2);
 
 					// 화살이 생성된 위치와 플레이어 사이의 거리 구하기
 					dis = sqrtf(powf(arrow_x, 2) + powf(arrow_y, 2));	
@@ -288,8 +293,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					arrow_y = arrow_y / dis;
 
 					// 화살의 속도 정하기
-					arrow_speed_x = arrow_x * 4.f;
-					arrow_speed_y = arrow_y * 4.f;
+					arrow_speed_x = arrow_x * 3.f;
+					arrow_speed_y = arrow_y * 3.f;
 
 					// iter에 들어있는 rt의 x와 y좌표에 arrow_speed_x와 arrow_speed_y를 더하기
 					OffsetRect(&iter->rt, arrow_speed_x, arrow_speed_y);	
@@ -336,6 +341,108 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					}
 				}
 				
+				// 하단 패턴
+				vector< bottomBox>::iterator b_iter;
+
+				for (b_iter = btArrowBox.begin(); b_iter != btArrowBox.end(); b_iter++)
+				{
+					b_iter->rt.top -= 5;
+					b_iter->rt.bottom -= 5;
+
+					RECT b_rt;
+					RECT rtbiter = b_iter->rt;
+
+					// 화살이 화면의 세로범위 밖으로 나갔을 때
+					if (rtbiter.top < 0)
+					{
+						btArrowBox.erase(b_iter);
+						break;
+					}
+					// 유저와 화살이 닿았을 때
+					else if (IntersectRect(&b_rt, &userRect, &rtbiter))
+					{
+						hp--;
+						btArrowBox.erase(b_iter);
+						break;
+					}
+				}
+					// 상단 패턴
+					vector< topBox>::iterator t_iter;
+
+					for (t_iter = topArrowBox.begin(); t_iter != topArrowBox.end(); t_iter++)
+					{
+						t_iter->rt.top += 5;
+						t_iter->rt.bottom += 5;
+
+						RECT t_rt;
+						RECT rttiter = t_iter->rt;
+
+						// 화살이 화면의 세로범위 밖으로 나갔을 때
+						if (rttiter.bottom > WINSIZEY)
+						{
+							topArrowBox.erase(t_iter);
+							break;
+						}
+						// 유저와 화살이 닿았을 때
+						else if (IntersectRect(&t_rt, &userRect, &rttiter))
+						{
+							hp--;
+							topArrowBox.erase(t_iter);
+							break;
+						}
+					}
+
+					// 우측 패턴
+					vector< rightBox>::iterator r_iter;
+
+					for (r_iter = rightArrowBox.begin(); r_iter != rightArrowBox.end(); r_iter++)
+					{
+						r_iter->rt.left -= 5;
+						r_iter->rt.right -= 5;
+
+						RECT r_rt;
+						RECT rtriter = r_iter->rt;
+
+						// 화살이 화면의 가로범위 밖으로 나갔을 때
+						if (rtriter.left < 0)
+						{
+							rightArrowBox.erase(r_iter);
+							break;
+						}
+						// 유저와 화살이 닿았을 때
+						else if (IntersectRect(&r_rt, &userRect, &rtriter))
+						{
+							hp--;
+							rightArrowBox.erase(r_iter);
+							break;
+						}
+					}
+
+					// 좌측 패턴
+					vector< leftBox>::iterator l_iter;
+
+					for (l_iter = leftArrowBox.begin(); l_iter != leftArrowBox.end(); l_iter++)
+					{
+						l_iter->rt.right += 5;
+						l_iter->rt.left += 5;
+
+						RECT l_rt;
+						RECT rtliter = l_iter->rt;
+
+						// 화살이 화면의 가로범위 밖으로 나갔을 때
+						if (rtliter.bottom > WINSIZEX)
+						{
+							leftArrowBox.erase(l_iter);
+							break;
+						}
+						// 유저와 화살이 닿았을 때
+						else if (IntersectRect(&l_rt, &userRect, &rtliter))
+						{
+							hp--;
+							leftArrowBox.erase(l_iter);
+							break;
+						}
+					}
 			}
 		}
 		break;
@@ -344,15 +451,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if (isStart)
 			{
-				time++;
-				nScore = time * 100.f;
+				gtime++;
+				nScore = gtime * 100.f;
 			}
 		}
 		break;
 		// 사방에서 화살이 나오는 패턴
 		case 3:
 		{
-			int arr[16] = { 10, 10, WINSIZEX / 2, 10, WINSIZEX - 10, 10, WINSIZEX - 10, WINSIZEY / 2, WINSIZEX - 100, WINSIZEY - 100, WINSIZEX / 2, WINSIZEY - 100, 10, WINSIZEY - 100, 10, WINSIZEY / 2 };
+			int arr[16] = {10, 10, WINSIZEX / 2, 10, WINSIZEX - 10, 10, WINSIZEX - 10, WINSIZEY / 2, WINSIZEX - 100, WINSIZEY - 100, WINSIZEX / 2, WINSIZEY - 100, 10, WINSIZEY - 100, 10, WINSIZEY / 2};
 
 
 			for (int j = 0; j < 15; j++)
@@ -373,19 +480,98 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// 하단 패턴
 		case 4:
 		{
-			int n = 0;
-			for (int j = 0; j < 6; j++)
-			{
-				// 화살
-				bottomBox bt_arrow;
-				bt_arrow.rt.left = 10 + n;
-				bt_arrow.rt.right = bt_arrow.rt.left + 10;
-				bt_arrow.rt.top = WINSIZEY - 10;
-				bt_arrow.rt.bottom = bt_arrow.rt.top + 10;
+			int bottom_arr[7] = { 10, 125, 250, 375, 500, 625, 770 };
 
-				n += 130;
-				btArrowBox.push_back(bt_arrow);
+			rand_num = rand() % (7 - 5 + 1) + 5;
+
+			for (int b = 0; b < 7; b++)
+			{
+				bottomBox bottom_arrow;
+				bottom_arrow.rt.left = bottom_arr[b];
+				bottom_arrow.rt.right = bottom_arrow.rt.left + 10;
+				bottom_arrow.rt.top = WINSIZEY - 30;
+				bottom_arrow.rt.bottom = bottom_arrow.rt.top + 10;
+
+				btArrowBox.push_back(bottom_arrow);
 			}
+			// 랜덤 패턴 타이머를 호출
+			SetTimer(hWnd, rand_num, 3000, NULL);
+			// 자기 자신 종료
+			KillTimer(hWnd, 4);
+		}
+		break;
+		// 상단 패턴
+		case 5:
+		{
+			int top_arr[7] = { 10, 125, 250, 375, 500, 625, 770 };
+
+			int top_rand[3] = { 4, 6, 7 };
+			int i = rand() % 3;
+
+			rand_num = top_rand[i];
+
+			for (int t = 0; t < 7; t++)
+			{
+				topBox top_arrow;
+				top_arrow.rt.left = top_arr[t];
+				top_arrow.rt.right = top_arrow.rt.left + 10;
+				top_arrow.rt.top = 10;
+				top_arrow.rt.bottom = top_arrow.rt.top + 10;
+
+				topArrowBox.push_back(top_arrow);
+			}
+			// 랜덤 패턴 타이머를 호출
+			SetTimer(hWnd, rand_num, 3000, NULL);
+			// 자기 자신 종료
+			KillTimer(hWnd, 5);
+		}
+		break;
+		// 우측 패턴
+		case 6:
+		{
+			int right_arr[6] = { 10, 114, 218, 322, 426, 520 };
+			int right_rand[3] = { 4, 5, 7 };
+			int i = rand() % 3;
+
+			rand_num = right_rand[i];
+			
+			for (int r = 0; r < 6; r++)
+			{
+				rightBox right_arrow;
+				right_arrow.rt.left = WINSIZEX;
+				right_arrow.rt.right = right_arrow.rt.left + 10;
+				right_arrow.rt.top = right_arr[r];
+				right_arrow.rt.bottom = right_arrow.rt.top + 10;
+
+				rightArrowBox.push_back(right_arrow);
+			}
+			// 랜덤 패턴 타이머를 호출
+			SetTimer(hWnd, rand_num, 3000, NULL);
+			// 자기 자신 종료
+			KillTimer(hWnd, 6);
+		}
+		break;
+		// 좌측 패턴
+		case 7:
+		{
+			int left_arr[6] = { 10, 114, 218, 322, 426, 520 };
+
+			rand_num = rand() % (6 - 4 + 1) + 4;
+
+			for (int l = 0; l < 6; l++)
+			{
+				leftBox left_arrow;
+				left_arrow.rt.left = 10;
+				left_arrow.rt.right = left_arrow.rt.left + 10;
+				left_arrow.rt.top = left_arr[l];
+				left_arrow.rt.bottom = left_arrow.rt.top + 10;
+
+				leftArrowBox.push_back(left_arrow);
+			}
+			// 랜덤 패턴 타이머를 호출
+			SetTimer(hWnd, rand_num, 3000, NULL);
+			// 자기 자신 종료
+			KillTimer(hWnd, 7);
 		}
 		break;
 		}
@@ -397,29 +583,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		hdc = BeginPaint(hWnd, &ps);
 
 		// 메모리에 DC 가지고 생성
-		HDC memdc = CreateCompatibleDC(hdc);
+		memDC = CreateCompatibleDC(hdc);
+
 		// 현재 윈도우 창 크기 받아오기
 		RECT rect;
 		GetClientRect(hWnd, &rect);
-
 		// 더블 버퍼링
 		// 메모리에 윈도우 창과 동일한 크기에 그릴수 있도록 셋팅하기 
-		HBITMAP memBitmap = CreateCompatibleBitmap(memdc, rect.right, rect.bottom);
+		HBITMAP memBitmap = CreateCompatibleBitmap(memDC, rect.right, rect.bottom);
 		// HBITMAP 또한 하나의 그리기 도구이므로 선택하기 및 예전 그리기 도구 저장
-		HBITMAP oldBitmap = (HBITMAP)SelectObject(memdc, memBitmap);
-		// 가상공간(memdc)의 백그라운드 컬러 설정해주기
-		FillRect(memdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
+		HBITMAP oldBitmap = (HBITMAP)SelectObject(memDC, memBitmap);
+		// 가상공간(memDC)의 백그라운드 컬러 설정해주기
+		FillRect(memDC, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
 		// 메모리공간에 그림 그리기
 
 		// 게임이 아직 시작되지 않았을 때
 		if (!check)	
 		{
-			DRAW_RECT(memdc, startBtn);
-			DRAW_RECT(memdc, endBtn);
+			DRAW_RECT(memDC, startBtn);
+			DRAW_RECT(memDC, endBtn);
 			string str = "게임 시작";
-			TextOutA(memdc, WINSIZEX / 2 - 90, WINSIZEY / 2 - 85, str.c_str(), str.length());
+			TextOutA(memDC, WINSIZEX / 2 - 90, WINSIZEY / 2 - 85, str.c_str(), str.length());
 			str = "게임 종료";
-			TextOutA(memdc, WINSIZEX / 2 - 90, WINSIZEY / 2 + 15, str.c_str(), str.length());
+			TextOutA(memDC, WINSIZEX / 2 - 90, WINSIZEY / 2 + 15, str.c_str(), str.length());
 
 			check = TRUE;
 		}
@@ -427,61 +613,84 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (isStart)	
 		{
 			// 플레이어  그리기
-			DRAW_RECT(memdc, userRect);	
+			DRAW_RECT(memDC, userRect);
 
-			// 똥 그리기
+			// 유저의 위치로 발사되는 화살 그리기
 			for (int i = 0; i < arrowBox.size(); i++)	
 			{
-				DRAW_RECT(memdc, arrowBox[i].rt);
+				DRAW_RECT(memDC, arrowBox[i].rt);
+			}
+
+			// 하단 패턴 화살 그리기
+			for (int k = 0; k < btArrowBox.size(); k++)
+			{
+				DRAW_RECT(memDC, btArrowBox[k].rt);
+			}
+
+			// 상단 패턴 화살 그리기
+			for (int o = 0; o < topArrowBox.size(); o++)
+			{
+				DRAW_RECT(memDC, topArrowBox[o].rt);
+			}
+
+			// 우측 패턴 화살 그리기
+			for (int r = 0; r < rightArrowBox.size(); r++)
+			{
+				DRAW_RECT(memDC, rightArrowBox[r].rt);
+			}
+
+			// 좌측 패턴 화살 그리기
+			for (int l = 0; l < leftArrowBox.size(); l++)
+			{
+				DRAW_RECT(memDC, leftArrowBox[l].rt);
 			}
 
 			char szBuf[32]; // 변환을 위한 변수
 
 			// 문자열로 변환하기
-			_itoa_s(nLevel, szBuf, 10);
 			string str = string(szBuf);
-			str = "Level: " + str;
-			TextOutA(memdc, 10, 10, str.c_str(), str.length());
 
 			_itoa_s(nScore, szBuf, 10);
 			str = string(szBuf);
 			str = "당신의 점수: " + str;
-			TextOutA(memdc, 10, 30, str.c_str(), str.length());
+			TextOutA(memDC, 10, 10, str.c_str(), str.length());
 
-			_itoa_s(time, szBuf, 10);
+			_itoa_s(gtime, szBuf, 10);
 			str = string(szBuf);
 			str = "피한 시간: " + str + "초";
-			TextOutA(memdc, 10, 50, str.c_str(), str.length());
-
-			/*_itoa_s(hp, szBuf, 10);
-			str = string(szBuf);
-			str = "당신의 체력: " + str;
-			TextOutA(memdc, 10, 70, str.c_str(), str.length());*/
+			TextOutA(memDC, 10, 30, str.c_str(), str.length());
 
 			// 플레이어가 죽었을 때
 			if (hp == 0)	
 			{
-				TextOutA(memdc, WINSIZEX / 2 - 50, WINSIZEY / 2 - 50, "GAME OVER", 9);
+				TextOutA(memDC, WINSIZEX / 2 - 50, WINSIZEY / 2 - 50, "GAME OVER", 9);
 				KillTimer(hWnd, 1);
 				KillTimer(hWnd, 2);
 				KillTimer(hWnd, 3);
-				TextOutA(memdc, retryBtn.left, retryBtn.top, "RETRY", 5);
+				KillTimer(hWnd, 4);
+				KillTimer(hWnd, 5);
+				KillTimer(hWnd, 6);
+				KillTimer(hWnd, 7);
+				TextOutA(memDC, retryBtn.left, retryBtn.top, "RETRY", 5);
 				startBtn = { 0, 0, 0, 0 };
 				endBtn = { 0, 0, 0, 0 };
 				arrowBox.clear();
-				time = 0;
+				btArrowBox.clear();
+				topArrowBox.clear();
+				rightArrowBox.clear();
+				leftArrowBox.clear();
+				gtime = 0;
 				nScore = 0;
-				nLevel = 0;
 				nDelay = 50;
 			}
 		}
 
-		// 가상 공간(memdc)에 그린 그림들을 메인 공간(hdc)로 전달
-		BitBlt(hdc, 0, 0, rect.right, rect.bottom, memdc, 0, 0, SRCCOPY);
+		// 가상 공간(memDC)에 그린 그림들을 메인 공간(hdc)로 전달
+		BitBlt(hdc, 0, 0, rect.right, rect.bottom, memDC, 0, 0, SRCCOPY);
 		// 생성해둔 메모리 공간 제거
-		SelectObject(memdc, oldBitmap);
+		SelectObject(memDC, oldBitmap);
 		DeleteObject(memBitmap);
-		DeleteDC(memdc);
+		DeleteDC(memDC);
 		EndPaint(hWnd, &ps);
 	}
 	break;
