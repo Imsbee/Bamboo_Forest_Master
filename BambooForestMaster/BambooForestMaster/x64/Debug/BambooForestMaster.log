@@ -1,0 +1,16 @@
+﻿  BambooForestMaster.cpp
+C:\Users\YUHAN\source\repos\BambooForestMaster\BambooForestMaster\framework.h(155,21): warning C4244: '+=': 'FLOAT'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\source\repos\BambooForestMaster\BambooForestMaster\framework.h(156,21): warning C4244: '+=': 'FLOAT'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\source\repos\BambooForestMaster\BambooForestMaster\BambooForestMaster.cpp(268,34): warning C4244: '=': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\source\repos\BambooForestMaster\BambooForestMaster\BambooForestMaster.cpp(269,34): warning C4244: '=': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\source\repos\BambooForestMaster\BambooForestMaster\BambooForestMaster.cpp(283,43): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\source\repos\BambooForestMaster\BambooForestMaster\BambooForestMaster.cpp(283,28): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\source\repos\BambooForestMaster\BambooForestMaster\BambooForestMaster.cpp(286,21): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\source\repos\BambooForestMaster\BambooForestMaster\BambooForestMaster.cpp(287,21): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\source\repos\BambooForestMaster\BambooForestMaster\BambooForestMaster.cpp(589,83): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\source\repos\BambooForestMaster\BambooForestMaster\BambooForestMaster.cpp(591,83): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\source\repos\BambooForestMaster\BambooForestMaster\BambooForestMaster.cpp(636,12): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\source\repos\BambooForestMaster\BambooForestMaster\BambooForestMaster.cpp(639,53): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\source\repos\BambooForestMaster\BambooForestMaster\BambooForestMaster.cpp(641,12): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\source\repos\BambooForestMaster\BambooForestMaster\BambooForestMaster.cpp(644,53): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  BambooForestMaster.vcxproj -> C:\Users\YUHAN\source\repos\BambooForestMaster\x64\Debug\BambooForestMaster.exe
